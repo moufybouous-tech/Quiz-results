@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Teacher Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0f1f3d;--navy2:#1a2f54;--gold:#c9a84c;--gold2:#e8c96a;--cream2:#ede5d0;--red:#8b2020;--green:#2D6A2D;--white:#fff}
+body{font-family:Georgia,serif;background:var(--navy);color:var(--white);min-height:100vh;padding:18px 14px 40px}
+.wrap{max-width:760px;margin:0 auto}
+h1{font-size:20px;color:var(--gold);text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:var(--cream2);font-size:13px;margin-bottom:18px}
+.card{background:rgba(26,47,84,.95);border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+label{display:block;color:rgba(255,255,255,.55);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px}
+input,select{width:100%;padding:11px 12px;border-radius:9px;font-size:14px;border:2px solid rgba(201,168,76,.3);background:rgba(0,0,0,.35);color:var(--white);outline:none;font-family:Georgia,serif}
+select option{background:#1a2f54}
+input:focus,select:focus{border-color:var(--gold)}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.btn{padding:12px 16px;background:var(--gold);border:none;border-radius:9px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;font-family:Georgia,serif}
+.btn.o{background:transparent;border:2px solid var(--gold);color:var(--gold)}
+.btn.r{background:var(--red);color:#fff}
+.btn.s{padding:7px 11px;font-size:12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btns .btn{flex:1;min-width:110px}
+.msg{margin-top:10px;font-size:13px;min-height:18px}
+.err{color:#ff9090}.ok{color:#90ee90}
+.pwbox{margin-top:14px;background:rgba(201,168,76,.1);border:2px solid var(--gold);border-radius:12px;padding:16px;text-align:center}
+.pwbox .lbl{color:var(--cream2);font-size:13px;margin-bottom:6px}
+.pwbox .pw{font-family:Courier New,monospace;font-size:44px;font-weight:700;letter-spacing:6px;color:var(--gold2);word-break:break-all}
+.pwbox .win{color:var(--cream2);font-size:13px;margin:6px 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:7px 5px;border-bottom:1px solid rgba(201,168,76,.3)}
+td{padding:9px 5px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:middle}
+td.pwc{font-family:Courier New,monospace;font-weight:700;color:var(--gold2)}
+.st{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.st.OPEN{color:#90ee90}.st.Scheduled{color:var(--gold2)}.st.Closed{color:rgba(255,255,255,.4)}
+.tw{overflow-x:auto}
+.empty{color:rgba(255,255,255,.4);font-size:13px;text-align:center;padding:16px}
+.hide{display:none}
+.note{color:rgba(255,255,255,.4);font-size:11.5px;line-height:1.6;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Quiz Teacher Panel</h1>
+  <div class="sub">Literature: Theory &amp; Practice &middot; L3 &middot; 2026&ndash;2027</div>
+
+  <div class="card" id="login">
+    <h2>Teacher password</h2>
+    <input type="password" id="key" placeholder="Your teacher password" autocomplete="off">
+    <div class="btns"><button class="btn" id="btn-connect">Open the panel</button></div>
+    <div class="msg err" id="login-msg"></div>
+    <div class="note">This is the TEACHER_KEY you set in the Sheet's script. It is checked on the server and is never stored in any web page.</div>
+  </div>
+
+  <div id="panel" class="hide">
+    <div class="card">
+      <h2>Open or schedule a quiz</h2>
+      <div class="row">
+        <div><label>Lecture</label><select id="lec"></select></div>
+        <div><label>Group</label><select id="grp"><option value="1">Group 1</option><option value="2">Group 2</option><option value="3">Group 3</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Opens</label><input type="datetime-local" id="opens"></div>
+        <div><label>Closes</label><input type="datetime-local" id="closes"></div>
+      </div>
+      <label>Password (leave empty to generate one)</label>
+      <input type="text" id="pw" placeholder="Generated automatically" autocomplete="off">
+      <div class="btns">
+        <button class="btn" id="btn-create">Create session</button>
+        <button class="btn o" data-quick="15">Open now, 15 min</button>
+        <button class="btn o" data-quick="30">Open now, 30 min</button>
+        <button class="btn o" data-quick="60">Open now, 60 min</button>
+      </div>
+      <div class="msg" id="create-msg"></div>
+      <div class="pwbox hide" id="pwbox">
+        <div class="lbl" id="pwbox-lbl"></div>
+        <div class="pw" id="pwbox-pw"></div>
+        <div class="win" id="pwbox-win"></div>
+        <button class="btn o s" id="btn-copy">Copy password</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Sessions</h2>
+      <div class="tw" id="sessions"></div>
+      <div class="btns"><button class="btn o" id="btn-refresh">Refresh</button></div>
+      <div class="note">Closing a session stops new students from starting. A student who is already in the middle of a quiz can still finish it. Creating a session for a lecture and group that already has one replaces it, including its password.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_URL="https://script.google.com/macros/s/AKfycbxsdCJ-iYE7rU3nOAH7RP1dUhVkvSlD1e9vtZ3cLli11Egfezn18fnYOb8o3nrRI-seaA/exec";
+const LECTURES={1:'Heart of Darkness',2:'The Dead',3:'The Second Coming',4:'The Waste Land',5:'The Great Gatsby',
+  6:'Mrs Dalloway',7:'Slave Narratives',8:'The Ethics of Living Jim Crow',9:'The Harlem Renaissance',
+  10:'Invisible Man',11:'Go Tell It on the Mountain'};
+const $=id=>document.getElementById(id);
+let KEY='',skew=0,timer=null;
+
+async function api(params){
+  const q=new URLSearchParams(Object.assign({},params,{key:KEY,cb:Date.now()}));
+  const res=await fetch(SHEET_URL+'?'+q);
+  return res.json();
+}
+function pad(n){return String(n).padStart(2,'0');}
+function toLocalInput(ms){const d=new Date(ms);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());}
+function show(ms){return new Date(ms).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+function statusOf(s){const now=Date.now()+skew;return now<s.opens?'Scheduled':(now>=s.closes?'Closed':'OPEN');}
+
+Object.keys(LECTURES).forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent='L'+n+' - '+LECTURES[n];$('lec').appendChild(o);});
+function defaults(){const n=Date.now();$('opens').value=toLocalInput(n);$('closes').value=toLocalInput(n+60*60000);}
+defaults();
+
+async function connect(){
+  const m=$('login-msg');m.textContent='';
+  KEY=$('key').value;
+  if(!KEY){m.textContent='Enter your teacher password.';return;}
+  try{
+    const r=await api({action:'verify'});
+    if(!r.auth){m.textContent='Incorrect teacher password.';return;}
+  }catch(e){m.textContent='Could not reach the server. Check your connection and the deployment.';return;}
+  try{sessionStorage.setItem('tk',KEY);}catch(e){}
+  $('login').classList.add('hide');$('panel').classList.remove('hide');
+  refresh();
+  clearInterval(timer);timer=setInterval(refresh,30000);
+}
+
+async function refresh(){
+  let r;
+  try{r=await api({action:'list'});}catch(e){return;}
+  if(!r||!r.ok)return;
+  skew=r.now-Date.now();
+  const box=$('sessions');box.innerHTML='';
+  if(!r.sessions.length){box.innerHTML='<div class="empty">No sessions yet.</div>';return;}
+  const t=document.createElement('table');
+  t.innerHTML='<thead><tr><th>Lecture</th><th>Group</th><th>Password</th><th>Opens</th><th>Closes</th><th>Status</th><th></th></tr></thead>';
+  const tb=document.createElement('tbody');
+  r.sessions.forEach(s=>{
+    const st=statusOf(s);
+    const tr=document.createElement('tr');
+    const cells=['L'+s.lec,'G'+s.grp,s.pw,show(s.opens),show(s.closes)];
+    cells.forEach((c,i)=>{const td=document.createElement('td');td.textContent=c;if(i===2)td.className='pwc';tr.appendChild(td);});
+    const tds=document.createElement('td');tds.innerHTML='<span class="st '+st+'">'+st+'</span>';tr.appendChild(tds);
+    const ta=document.createElement('td');
+    const b1=document.createElement('button');b1.className='btn o s';b1.textContent='Close now';b1.dataset.act='close';b1.dataset.lec=s.lec;b1.dataset.grp=s.grp;
+    const b2=document.createElement('button');b2.className='btn r s';b2.textContent='Delete';b2.dataset.act='remove';b2.dataset.lec=s.lec;b2.dataset.grp=s.grp;b2.style.marginLeft='6px';
+    if(st!=='Closed')ta.appendChild(b1);ta.appendChild(b2);tr.appendChild(ta);
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);box.appendChild(t);
+}
+
+async function create(opens,closes){
+  const m=$('create-msg');m.className='msg';m.textContent='Saving...';
+  const params={action:'create',lec:$('lec').value,grp:$('grp').value,opens:opens,closes:closes,pw:$('pw').value.trim()};
+  let r;
+  try{r=await api(params);}catch(e){m.className='msg err';m.textContent='Could not reach the server.';return;}
+  if(!r.ok){m.className='msg err';m.textContent=r.msg||'Could not save the session.';return;}
+  m.className='msg ok';m.textContent='Session saved.';
+  $('pwbox-lbl').textContent='Lecture '+r.lec+' ('+LECTURES[r.lec]+'), Group '+r.grp+', password:';
+  $('pwbox-pw').textContent=r.password;
+  $('pwbox-win').textContent='Open from '+show(r.opens)+' to '+show(r.closes);
+  $('pwbox').classList.remove('hide');
+  $('pw').value='';
+  refresh();
+}
+
+$('btn-connect').onclick=connect;
+$('key').addEventListener('keydown',e=>{if(e.key==='Enter')connect();});
+$('btn-refresh').onclick=refresh;
+$('btn-create').onclick=()=>{
+  const o=new Date($('opens').value).getTime(),c=new Date($('closes').value).getTime();
+  if(!isFinite(o)||!isFinite(c)){$('create-msg').className='msg err';$('create-msg').textContent='Choose both an opening and a closing time.';return;}
+  create(o,c);
+};
+document.querySelectorAll('[data-quick]').forEach(b=>{b.onclick=()=>{
+  const now=Date.now()+skew;create(now,now+Number(b.dataset.quick)*60000);
+};});
+$('sessions').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-act]');if(!b)return;
+  if(b.dataset.act==='remove'&&!confirm('Delete this session and its password?'))return;
+  try{await api({action:b.dataset.act,lec:b.dataset.lec,grp:b.dataset.grp});}catch(err){}
+  refresh();
+});
+$('btn-copy').onclick=()=>{
+  const t=$('pwbox-pw').textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).catch(()=>{});
+  else{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+};
+try{const k=sessionStorage.getItem('tk');if(k){$('key').value=k;connect();}}catch(e){}
+</script>
+</body>
+</html>
