@@ -144,7 +144,7 @@ span.wb-word.used{background:none;border:1px solid rgba(255,255,255,.12);border-
     <p>Enter the password your lecturer writes on the board, then tap Start Quiz.</p>
     <input type="password" id="pw-input" placeholder="Password&hellip;" autocomplete="off">
     <div class="err" id="pw-error">Incorrect password. Please try again.</div>
-    <button class="btn" onclick="checkPw()">Start Quiz &rarr;</button>
+    <button class="btn" id="pw-btn" onclick="checkPw()">Start Quiz &rarr;</button>
   </div>
   <div class="link-line"><button onclick="openAdminPrompt()">Teacher Panel</button></div>
   <div class="footer">Department of English &middot; Dr. Boumous</div>
@@ -284,8 +284,7 @@ const LECTURE={num:4,title:"The Waste Land",author:"T. S. Eliot (1922)",group:2,
 // ============================================================
 //  CONFIG
 // ============================================================
-const MASTER_PW="Prof@SoukAhras#2026";
-const SESSION_PW="AprilCruel04-G2";
+const QUIZ_GROUP=2;
 
 // Optional: paste a Google Apps Script Web App URL here to also log
 // results to a Google Sheet automatically. This is OPTIONAL — the
@@ -379,25 +378,54 @@ function updateLive(){
 // asks for the master password separately, with its own prompt, so
 // the two never share a field or a button.
 document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw();});
-function checkPw(){
+function unlockMessage(r){
+  const t=ms=>new Date(ms).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  switch(r&&r.code){
+    case 'NO_SESSION':return 'No quiz has been opened for your group yet. Wait for your lecturer.';
+    case 'WRONG_PW':return 'Incorrect password. Please check it and try again.';
+    case 'EARLY':return 'This quiz is not open yet. It opens at '+t(r.opens)+'.';
+    case 'CLOSED':return 'This quiz is closed.';
+    case 'BUSY':return 'Too many attempts. Wait one minute and try again.';
+  }
+  return (r&&r.msg)||'Could not check the password. Try again.';
+}
+async function checkPw(){
   const v=document.getElementById('pw-input').value.trim();
   const err=document.getElementById('pw-error');
-  if(v===SESSION_PW){
-    err.style.display='none';
-    studentList=loadList();
-    goToStudentSelect();
-  }else{
-    err.style.display='block';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();
+  const btn=document.getElementById('pw-btn');
+  const fail=m=>{err.textContent=m;err.style.display='block';};
+  const idle=()=>{btn.disabled=false;btn.innerHTML='Start Quiz &rarr;';};
+  if(!v){fail('Enter the password your lecturer gives you.');return;}
+  err.style.display='none';btn.disabled=true;btn.textContent='Checking...';
+  let r=null;
+  try{
+    const res=await fetch(SHEET_URL+'?'+new URLSearchParams({action:'unlock',lec:LECTURE.num,grp:QUIZ_GROUP,pw:v,cb:Date.now()}));
+    r=await res.json();
+  }catch(e){idle();fail('Could not reach the server. Check your connection and try again.');return;}
+  idle();
+  if(r&&r.ok){S.resumeOnly=false;studentList=loadList();goToStudentSelect();return;}
+  if(r&&r.code==='CLOSED'){
+    let held=false;
+    try{held=!!(localStorage.getItem(LKEY('qp4'))||localStorage.getItem(LKEY('qr4')));}catch(e){}
+    if(held){S.resumeOnly=true;studentList=loadList();goToStudentSelect();return;}
   }
+  if(r&&r.code==='WRONG_PW')document.getElementById('pw-input').value='';
+  fail(unlockMessage(r));
 }
-function openAdminPrompt(){
-  const pw=prompt('Teacher Panel — enter the master password:');
-  if(pw===null)return;
-  if(pw===MASTER_PW){
-    studentList=loadList();showCurrentListInfo();showScreen('screen-admin');
-  }else{
-    alert('Incorrect master password.');
-  }
+async function verifyTeacher(title){
+  const pw=prompt(title);
+  if(pw===null)return false;
+  try{
+    const res=await fetch(SHEET_URL+'?'+new URLSearchParams({action:'verify',key:pw,cb:Date.now()}));
+    const r=await res.json();
+    if(r&&r.auth)return true;
+    alert('Incorrect teacher password.');
+  }catch(e){alert('Could not reach the server to check the password.');}
+  return false;
+}
+async function openAdminPrompt(){
+  if(!(await verifyTeacher('Teacher password:')))return;
+  studentList=loadList();showCurrentListInfo();showScreen('screen-admin');
 }
 function goToStudentSelect(){
   const gs=document.getElementById('group-select');
@@ -489,6 +517,7 @@ function beginQuiz(){
   if(!grp||(grp!=='__free__'&&!stu)){err.style.display='block';return;}
   const chosenName=grp==='__free__'?'Student':stu;
   if(checkForSavedState(chosenName)){err.style.display='none';return;}
+  if(S.resumeOnly){err.style.display='block';err.textContent='This quiz is closed. You can only finish a quiz you had already started.';return;}
   if(checkSessionLock(chosenName)){
     err.style.display='block';
     err.textContent='Your session has ended. No new attempts are allowed. Ask your lecturer to reset.';
@@ -746,16 +775,12 @@ function showResults(){
     '</div></div>').join('');
   showScreen('screen-results');
 }
-function adminUnlockRetry(){
-  const pw=prompt('Enter Master Password to allow a retry:');
-  if(pw===MASTER_PW){
-    clearResult();clearProgress();
-    try{localStorage.removeItem(LKEY('quizSessionLocked'));}catch(e){}
-    S.lec=LECTURE;
-    goToStudentSelect();
-  }else if(pw!==null){
-    alert('Incorrect password. Retry remains locked.');
-  }
+async function adminUnlockRetry(){
+  if(!(await verifyTeacher('Teacher password, to allow this student a retry:')))return;
+  clearResult();clearProgress();
+  try{localStorage.removeItem(LKEY('quizSessionLocked'));}catch(e){}
+  S.lec=LECTURE;S.leaveLocked=false;S.resumeOnly=false;
+  goToStudentSelect();
 }
 
 // ── TIMER ─────────────────────────────────────────────────────
@@ -918,15 +943,11 @@ function checkSessionLock(name){
   return false;
 }
 
-function resetSession(){
-  const pw=prompt('Enter Master Password to reset the session:');
-  if(pw===MASTER_PW){
-    try{localStorage.removeItem(LKEY('quizSessionLocked'));localStorage.removeItem(LKEY('quizSessionStart'));}catch(e){}
-    sessionLocked=false;
-    alert('Session reset. Students can now start a new quiz.');
-  }else{
-    alert('Incorrect password.');
-  }
+async function resetSession(){
+  if(!(await verifyTeacher('Teacher password, to reset the session:')))return;
+  try{localStorage.removeItem(LKEY('quizSessionLocked'));localStorage.removeItem(LKEY('quizSessionStart'));}catch(e){}
+  sessionLocked=false;
+  alert('Session reset. Students can now start a new quiz.');
 }
 
 function updateTimerDisplay(){
