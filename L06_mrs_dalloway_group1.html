@@ -201,11 +201,12 @@ span.wb-word.used{background:none;border:1px solid rgba(255,255,255,.12);border-
     <p>Select your group and your name to begin.</p>
     <p id="rules-note" style="color:#ff9090;font-size:12px;line-height:1.6"></p>
     <select id="group-select" onchange="filterStudents()"><option value="">&#8212; Select your group &#8212;</option></select>
-    <select id="student-select" disabled><option value="">&#8212; Select your name &#8212;</option></select>
+    <select id="student-select" disabled onchange="onNameChange()"><option value="">&#8212; Select your name &#8212;</option></select>
+    <div id="new-name-box" style="display:none"><input type="text" id="new-name" placeholder="SURNAME First name" autocomplete="off"><p style="font-size:11px;color:rgba(255,255,255,.5);margin:-4px 0 10px;line-height:1.5">Write your surname, then your first name, as on the official list. Your lecturer will check it.</p></div>
     <div class="err" id="stu-error">Please select your group and name.</div>
     <button class="btn" style="margin-top:4px" onclick="beginQuiz()">Start Quiz &rarr;</button>
   </div>
-  <div class="footer">20 questions &middot; 10 MCQ + 10 Fill-in-the-Gap &middot; Score out of 20 &middot; timed questions</div>
+  <div class="footer">20 questions &middot; 10 MCQ + 10 Fill-in-the-Gap &middot; Score out of <span id="foot-max">16</span> &middot; timed questions</div>
   <div class="link-line"><button onclick="resetSession()">Lecturer: Reset Session</button></div>
 </div>
 
@@ -228,7 +229,7 @@ span.wb-word.used{background:none;border:1px solid rgba(255,255,255,.12);border-
   <div class="score-strip">
     <div class="score-pill"><div class="sp-label">MCQ</div><div class="sp-val" id="live-mcq" style="color:var(--gold)">0/10</div></div>
     <div class="score-pill"><div class="sp-label">Gap</div><div class="sp-val" id="live-gap" style="color:#c8a8ff">0/10</div></div>
-    <div class="score-pill"><div class="sp-label">Score /20</div><div class="sp-val" id="live-total" style="color:var(--gold2)">0</div></div>
+    <div class="score-pill"><div class="sp-label" id="live-total-label">Score /20</div><div class="sp-val" id="live-total" style="color:var(--gold2)">0</div></div>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="q-progress"></div></div>
   <div class="q-card">
@@ -243,7 +244,7 @@ span.wb-word.used{background:none;border:1px solid rgba(255,255,255,.12);border-
 <div class="screen" id="screen-results">
   <div class="results-wrap">
     <div class="r-header">
-      <div class="r-label">Quiz Complete &middot; Score out of 20</div>
+      <div class="r-label" id="res-max-label">Quiz Complete &middot; Score out of 20</div>
       <div class="r-name" id="r-name"></div>
       <div class="r-group" id="r-group"></div>
       <div class="r-title" id="r-title"></div>
@@ -317,11 +318,19 @@ const SHEET_URL="https://script.google.com/macros/s/AKfycbxsdCJ-iYE7rU3nOAH7RP1d
 // ---- Anti-cheating settings (change these numbers if needed) ----
 const SECONDS_MCQ=30;          // time allowed per multiple-choice question
 const SECONDS_GAP=45;          // time allowed per fill-in-the-gap question
-const TOTAL_SECONDS=900;       // overall limit for the whole quiz (15 minutes)
+let TOTAL_SECONDS=900;       // overall limit for the whole quiz (15 minutes)
 const REVEAL_CORRECT=false;    // false = students see right/wrong only, never the correct answer
 const LEAVE_MODE='LOCK';       // 'LOCK' = quiz ends for good if the student leaves the page; 'LOG' = only record it
 const LEAVE_GRACE_SECONDS=3;   // window focus lost for longer than this (e.g. split screen) counts as leaving
 
+let SCORE_MAX=16;
+try{const _l=Number(localStorage.getItem(LKEY('qLimit')));if(_l>=300&&_l<=3600)TOTAL_SECONDS=_l;const _m=Number(localStorage.getItem(LKEY('qMax')));if(_m>=5&&_m<=100)SCORE_MAX=_m;}catch(e){}
+function pts(c){return Math.round(c*SCORE_MAX/20*100)/100;}
+function syncMaxLabels(){
+  const a=document.getElementById('foot-max');if(a)a.textContent=SCORE_MAX;
+  const b=document.getElementById('res-max-label');if(b)b.textContent='Quiz Complete \u00b7 Score out of '+SCORE_MAX;
+}
+syncMaxLabels();
 function getGrade(s){
   if(s>=17)return{g:"Excellent",c:"#90ee90"};
   if(s>=15)return{g:"Tres Bien",c:"#b8e890"};
@@ -391,7 +400,8 @@ function updateLive(){
   const mo=S.mcqR.filter(r=>r.ok).length;const go=S.gapR.filter(r=>r.ok).length;
   document.getElementById('live-mcq').textContent=mo+"/10";
   document.getElementById('live-gap').textContent=go+"/10";
-  document.getElementById('live-total').textContent=mo+go;
+  {const lt=document.getElementById('live-total-label');if(lt)lt.textContent='Score /'+SCORE_MAX;}
+  document.getElementById('live-total').textContent=pts(mo+go);
 }
 
 // PASSWORD — a single field. "Start Quiz" checks it against the
@@ -424,7 +434,12 @@ async function checkPw(){
     r=await res.json();
   }catch(e){idle();fail('Could not reach the server. Check your connection and try again.');return;}
   idle();
-  if(r&&r.ok){S.resumeOnly=false;studentList=loadList();goToStudentSelect();return;}
+  if(r&&r.ok){
+    S.resumeOnly=false;
+    if(r.mins>=5&&r.mins<=60){TOTAL_SECONDS=r.mins*60;try{localStorage.setItem(LKEY('qLimit'),String(TOTAL_SECONDS));}catch(e){}}
+    if(r.max>=5&&r.max<=100){SCORE_MAX=r.max;try{localStorage.setItem(LKEY('qMax'),String(SCORE_MAX));}catch(e){}syncMaxLabels();}
+    studentList=loadList();goToStudentSelect();return;
+  }
   if(r&&r.code==='CLOSED'){
     let held=false;
     try{held=!!(localStorage.getItem(LKEY('qp4'))||localStorage.getItem(LKEY('qr4')));}catch(e){}
@@ -461,6 +476,7 @@ function goToStudentSelect(){
     document.getElementById('student-select').disabled=true;
   }
   document.getElementById('stu-error').style.display='none';
+  try{const gs2=document.getElementById('group-select');const want='Group '+QUIZ_GROUP;if([...gs2.options].some(o=>o.value===want)){gs2.value=want;filterStudents();}}catch(e){}
   showScreen('screen-student');
 }
 
@@ -529,12 +545,40 @@ function filterStudents(){
   const stus=(studentList[grp]||[]).slice().sort();
   ss.innerHTML='<option value="">Select your name</option>';
   stus.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
-  ss.disabled=false;
+  const nn=document.createElement('option');nn.value='__new__';nn.textContent='My name is not in this list';ss.appendChild(nn);
+  ss.disabled=false;onNameChange();
+}
+function onNameChange(){
+  const v=document.getElementById('student-select').value;
+  const box=document.getElementById('new-name-box');
+  if(box)box.style.display=(v==='__new__')?'block':'none';
+}
+function normalizeNm(s){
+  let t=String(s);
+  try{t=t.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}
+  t=t.toUpperCase().replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
+  return t.split(' ').sort().join(' ');
+}
+function resolveNewName(raw,grp){
+  const clean=String(raw||'').replace(/\s+/g,' ').trim();
+  if(!/^[A-Za-z\u00C0-\u00FF'\u2019 -]{4,60}$/.test(clean)||clean.split(' ').length<2)
+    return {ok:false,msg:'Write your surname and first name (letters only), as on the official list.'};
+  const key=normalizeNm(clean);
+  const hit=(studentList[grp]||[]).find(n=>normalizeNm(n)===key);
+  if(hit)return {ok:true,name:hit,added:false};
+  return {ok:true,name:clean.toUpperCase(),added:true};
 }
 function beginQuiz(){
   const grp=document.getElementById('group-select').value;
-  const stu=document.getElementById('student-select').value;
+  let stu=document.getElementById('student-select').value;
   const err=document.getElementById('stu-error');
+  err.textContent='Please select your group and name.';
+  S.nameAdded=false;
+  if(stu==='__new__'){
+    const res=resolveNewName(document.getElementById('new-name').value,grp);
+    if(!res.ok){err.textContent=res.msg;err.style.display='block';return;}
+    stu=res.name;S.nameAdded=res.added;
+  }
   if(!grp||(grp!=='__free__'&&!stu)){err.style.display='block';return;}
   const chosenName=grp==='__free__'?'Student':stu;
   if(checkForSavedState(chosenName)){err.style.display='none';return;}
@@ -694,7 +738,7 @@ function resultSummaryText(){
   const now=new Date();
   return 'L'+S.lec.num+' - '+S.lec.title+' | '+S.name+' ('+S.group+') | '+
     now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+
-    ' | MCQ '+mo+'/10, Gap '+go+'/10, Total '+total+'/20, Grade: '+grade;
+    ' | MCQ '+mo+'/10, Gap '+go+'/10, Total '+pts(total)+'/'+SCORE_MAX+', Grade: '+grade;
 }
 function copyResult(){
   const txt=resultSummaryText();
@@ -741,7 +785,7 @@ async function trySaveToSheet(){
   const avgSec=timed.length?Math.round(timed.reduce((a,r)=>a+r.secs,0)/timed.length):'';
   const leftQs=allR.filter(r=>r.left).length;
   const payload={
-    attemptId:String(S.startTime||''),
+    attemptId:String(S.startTime||''),nameAdded:S.nameAdded?'YES':'',
     leaves:S.leaves,awaySeconds:S.awaySec,avgSeconds:avgSec,leftOnQuestions:leftQs,
     date:now.toLocaleDateString('en-GB'),
     time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
@@ -753,7 +797,7 @@ async function trySaveToSheet(){
     lectureNum:S.lec.num,
     lecture:'L'+S.lec.num+' - '+S.lec.title,
     mcqScore:mo+'/10',openScore:go+'/10',
-    totalPct:total+'/20',rawScore:total,grade,feedback:gapDetail
+    totalPct:pts(total)+'/'+SCORE_MAX,rawScore:pts(total),scoreMax:SCORE_MAX,correctCount:total,grade,feedback:gapDetail
   };
   try{
     await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true});
@@ -774,7 +818,7 @@ function showResults(){
   document.getElementById('r-name').textContent=S.name;
   document.getElementById('r-group').textContent=S.group;
   document.getElementById('r-title').textContent=S.lec.title+' \u2014 '+S.lec.author;
-  const tv=document.getElementById('r-total');tv.textContent=total+' / 20';tv.style.color=gc;
+  const tv=document.getElementById('r-total');tv.textContent=pts(total)+' / '+SCORE_MAX;syncMaxLabels();tv.style.color=gc;
   const gv=document.getElementById('r-grade');gv.textContent=grade;gv.style.color=gc;
   document.getElementById('r-mcq').textContent=mo+'/10';
   document.getElementById('r-gap').textContent=go+'/10';
