@@ -40,12 +40,16 @@ td.pwc{font-family:Courier New,monospace;font-weight:700;color:var(--gold2)}
 .empty{color:rgba(255,255,255,.4);font-size:13px;text-align:center;padding:16px}
 .hide{display:none}
 .note{color:rgba(255,255,255,.4);font-size:11.5px;line-height:1.6;margin-top:10px}
+textarea{width:100%;padding:11px 12px;border-radius:9px;font-size:13px;border:2px solid rgba(201,168,76,.3);background:rgba(0,0,0,.35);color:#fff;outline:none;font-family:Courier New,monospace;resize:vertical}
+textarea:focus{border-color:var(--gold)}
+input[type=file]{padding:9px 10px;font-size:12px}
 </style>
+<script src="config.js"></script>
 </head>
 <body>
 <div class="wrap">
   <h1>Quiz Teacher Panel</h1>
-  <div class="sub">Literature: Theory &amp; Practice &middot; L3 &middot; 2026&ndash;2027</div>
+  <div class="sub">Literature: Theory &amp; Practice &middot; <span id="cfg-ly">L3 &middot; 2026&ndash;2027</span></div>
 
   <div class="card" id="login">
     <h2>Teacher password</h2>
@@ -94,14 +98,32 @@ td.pwc{font-family:Courier New,monospace;font-weight:700;color:var(--gold2)}
       <div class="btns"><button class="btn o" id="btn-refresh">Refresh</button></div>
       <div class="note">The opening and closing times control when students may start; the quiz time is how long each one has after starting. Closing a session stops new students from starting. A student who is already in the middle of a quiz can still finish it. Creating a session for a lecture and group that already has one replaces it, including its password.</div>
     </div>
+
+    <div class="card">
+      <h2>Student lists</h2>
+      <div class="note" style="margin:0 0 6px">Add or replace the list for one group. Paste the names, one per line, or upload a CSV or TXT file (in Excel: Save As, CSV UTF-8). A file with two columns, Group then Name, can fill several groups at once. Saving a list replaces that group's previous list.</div>
+      <div class="row">
+        <div><label>Group (if the file has no Group column)</label><select id="r-grp"><option value="1">Group 1</option><option value="2">Group 2</option><option value="3">Group 3</option></select></div>
+        <div><label>Upload a file</label><input type="file" id="r-file" accept=".csv,.txt,text/csv,text/plain"></div>
+      </div>
+      <label>Names</label>
+      <textarea id="r-text" rows="8" placeholder="SURNAME First name&#10;SURNAME First name"></textarea>
+      <div class="btns">
+        <button class="btn" id="btn-rsave">Save list</button>
+        <button class="btn o" id="btn-rload">Load current list</button>
+        <button class="btn o" id="btn-rcheck">Check lists</button>
+      </div>
+      <div class="msg" id="r-msg"></div>
+      <div class="note" id="r-counts"></div>
+    </div>
   </div>
 </div>
 
 <script>
-const SHEET_URL="https://script.google.com/macros/s/AKfycbxsdCJ-iYE7rU3nOAH7RP1dUhVkvSlD1e9vtZ3cLli11Egfezn18fnYOb8o3nrRI-seaA/exec";
+const SHEET_URL=(window.APP_CONFIG&&window.APP_CONFIG.sheetUrl)||"";
 const LECTURES={1:'Heart of Darkness',2:'The Dead',3:'The Second Coming',4:'The Waste Land',5:'The Great Gatsby',
   6:'Mrs Dalloway',7:'Slave Narratives',8:'The Ethics of Living Jim Crow',9:'The Harlem Renaissance',
-  10:'Invisible Man',11:'Go Tell It on the Mountain'};
+  10:'Invisible Man',11:'Go Tell It on the Mountain',12:'Extra: The Second Coming and Modernism'};
 const $=id=>document.getElementById(id);
 let KEY='',skew=0,timer=null;
 
@@ -116,6 +138,7 @@ function show(ms){return new Date(ms).toLocaleString('en-GB',{day:'2-digit',mont
 function statusOf(s){const now=Date.now()+skew;return now<s.opens?'Scheduled':(now>=s.closes?'Closed':'OPEN');}
 
 Object.keys(LECTURES).forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent='L'+n+' - '+LECTURES[n];$('lec').appendChild(o);});
+$('lec').onchange=function(){if(this.value==='12')$('mins').value='20';};
 function defaults(){const n=Date.now();$('opens').value=toLocalInput(n);$('closes').value=toLocalInput(n+60*60000);}
 defaults();
 
@@ -129,7 +152,7 @@ async function connect(){
   }catch(e){m.textContent='Could not reach the server. Check your connection and the deployment.';return;}
   try{sessionStorage.setItem('tk',KEY);}catch(e){}
   $('login').classList.add('hide');$('panel').classList.remove('hide');
-  refresh();
+  refresh();checkLists();
   clearInterval(timer);timer=setInterval(refresh,30000);
 }
 
@@ -195,6 +218,64 @@ $('btn-copy').onclick=()=>{
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).catch(()=>{});
   else{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
 };
+function parseRoster(text,defGroup){
+  const out={};
+  String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).forEach(function(line){
+    line=line.trim();if(!line)return;
+    const cells=line.split(/[;\t,]/).map(function(c){return c.trim();}).filter(function(c){return c!=='';});
+    if(!cells.length)return;
+    if(/^(group|groupe)$/i.test(cells[0])&&cells.length>=2&&/^(name|nom|student|etudiant)/i.test(cells[1]))return;
+    let g=defGroup,name=line;
+    const m=cells[0].match(/^(?:group|groupe|g)?\s*([1-3])$/i);
+    if(m&&cells.length>=2){g=Number(m[1]);name=cells.slice(1).join(' ');}
+    else if(cells.length>=2){name=cells.join(' ');}
+    name=name.replace(/^["']+|["']+$/g,'').replace(/\s+/g,' ').trim();
+    if(!name||/^\d+$/.test(name)||/^(name|nom)$/i.test(name))return;
+    (out[g]=out[g]||[]).push(name);
+  });
+  return out;
+}
+function uniqueCount(names){return new Set(names.map(function(n){return n.toUpperCase();})).size;}
+function showCounts(r){
+  if(!r||!r.ok)return;
+  $('r-counts').textContent='Lists on the server: Group 1, '+r.counts[1]+' students. Group 2, '+r.counts[2]+'. Group 3, '+r.counts[3]+'.';
+}
+async function saveRoster(){
+  const m=$('r-msg');m.className='msg';
+  const parsed=parseRoster($('r-text').value,Number($('r-grp').value));
+  const groups=Object.keys(parsed);
+  if(!groups.length){m.className='msg err';m.textContent='Paste or upload at least one name.';return;}
+  m.textContent='Saving...';
+  try{
+    for(const g of groups){
+      await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'roster',key:KEY,group:Number(g),names:parsed[g]})});
+    }
+  }catch(e){m.className='msg err';m.textContent='Could not reach the server.';return;}
+  let r=null;
+  const confirmed=function(){return r&&r.ok&&groups.every(function(g){return r.counts[g]===uniqueCount(parsed[g]);});};
+  for(let i=0;i<8;i++){
+    await new Promise(function(res){setTimeout(res,i?700:300);});
+    try{r=await api({action:'rosterInfo'});}catch(e){r=null;}
+    if(confirmed())break;
+  }
+  if(confirmed()){
+    m.className='msg ok';
+    m.textContent='Saved: '+groups.map(function(g){return 'Group '+g+' ('+r.counts[g]+' students)';}).join(', ')+'.';
+  }else{
+    m.className='msg err';
+    m.textContent='The list was sent but could not be confirmed. Press "Check lists". If the numbers are wrong, the script may not have been redeployed.';
+  }
+  showCounts(r);
+}
+async function checkLists(){try{showCounts(await api({action:'rosterInfo'}));}catch(e){}}
+async function loadCurrent(){
+  try{const r=await api({action:'rosterInfo',grp:$('r-grp').value});if(r.ok){$('r-text').value=(r.names||[]).join('\n');showCounts(r);}}catch(e){}
+}
+$('btn-rsave').onclick=saveRoster;
+$('btn-rload').onclick=loadCurrent;
+$('btn-rcheck').onclick=checkLists;
+$('r-file').onchange=function(){const f=this.files[0];if(!f)return;const rd=new FileReader();rd.onload=function(){$('r-text').value=String(rd.result);};rd.readAsText(f);};
+(function(){const c=window.APP_CONFIG||{};const e=document.getElementById('cfg-ly');if(e&&(c.level||c.year))e.textContent=(c.level||'')+' \u00b7 '+(c.year||'');})();
 try{const k=sessionStorage.getItem('tk');if(k){$('key').value=k;connect();}}catch(e){}
 </script>
 </body>
