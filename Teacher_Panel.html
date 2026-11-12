@@ -56,6 +56,7 @@ input[type=file]{padding:9px 10px;font-size:12px}
     <input type="password" id="key" placeholder="Your teacher password" autocomplete="off">
     <div class="btns"><button class="btn" id="btn-connect">Open the panel</button></div>
     <div class="msg err" id="login-msg"></div>
+    <div class="note" id="cfg-note"></div>
     <div class="note">This is the TEACHER_KEY you set in the Sheet's script. It is checked on the server and is never stored in any web page.</div>
   </div>
 
@@ -128,9 +129,24 @@ const $=id=>document.getElementById(id);
 let KEY='',skew=0,timer=null;
 
 async function api(params){
+  if(!SHEET_URL)throw new Error('NOCONFIG');
   const q=new URLSearchParams(Object.assign({},params,{key:KEY,cb:Date.now()}));
-  const res=await fetch(SHEET_URL+'?'+q);
-  return res.json();
+  let res;
+  try{res=await fetch(SHEET_URL+'?'+q);}catch(e){throw new Error('NETWORK');}
+  const text=await res.text();
+  try{return JSON.parse(text);}catch(e){const err=new Error('NOTJSON');err.sample=String(text).slice(0,300);throw err;}
+}
+function explain(e){
+  const m=e&&e.message;
+  if(m==='NOCONFIG')return 'The settings file config.js was not found. Upload config.js to the same folder as Teacher_Panel.html on GitHub, then reload this page.';
+  if(m==='NETWORK')return 'Could not reach the server. Check your internet connection and that the address in config.js is correct.';
+  if(m==='NOTJSON'){
+    const s=String(e.sample||'').trim();
+    if(/^OK$/i.test(s))return 'The script answered "OK", which means the OLD version of the script is still deployed. In Apps Script: Deploy, Manage deployments, the pencil icon, Version: New version, Deploy.';
+    if(/Script function not found/i.test(s))return 'Google says the script function was not found: the new script text was not saved or not deployed. Paste the new Code_Quiz.gs, Save, then Deploy, Manage deployments, pencil, New version, Deploy.';
+    return 'The address answered with a web page instead of data. Check that the script is deployed as a Web app with "Who has access: Anyone", and that the address in config.js ends in /exec.';
+  }
+  return 'Could not reach the server.';
 }
 function pad(n){return String(n).padStart(2,'0');}
 function toLocalInput(ms){const d=new Date(ms);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());}
@@ -149,7 +165,7 @@ async function connect(){
   try{
     const r=await api({action:'verify'});
     if(!r.auth){m.textContent='Incorrect teacher password.';return;}
-  }catch(e){m.textContent='Could not reach the server. Check your connection and the deployment.';return;}
+  }catch(e){m.textContent=explain(e);return;}
   try{sessionStorage.setItem('tk',KEY);}catch(e){}
   $('login').classList.add('hide');$('panel').classList.remove('hide');
   refresh();checkLists();
@@ -276,6 +292,7 @@ $('btn-rload').onclick=loadCurrent;
 $('btn-rcheck').onclick=checkLists;
 $('r-file').onchange=function(){const f=this.files[0];if(!f)return;const rd=new FileReader();rd.onload=function(){$('r-text').value=String(rd.result);};rd.readAsText(f);};
 (function(){const c=window.APP_CONFIG||{};const e=document.getElementById('cfg-ly');if(e&&(c.level||c.year))e.textContent=(c.level||'')+' \u00b7 '+(c.year||'');})();
+(function(){const n=document.getElementById('cfg-note');if(n)n.textContent='Server address in use: '+(SHEET_URL?SHEET_URL.slice(0,40)+' ... '+SHEET_URL.slice(-14):'none (config.js not loaded)');})();
 try{const k=sessionStorage.getItem('tk');if(k){$('key').value=k;connect();}}catch(e){}
 </script>
 </body>
