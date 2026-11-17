@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Literature: Theory &amp; Practice &mdash; L6 In-Class Quiz</title>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0f1f3d;--navy2:#1a2f54;--gold:#c9a84c;--gold2:#e8c96a;--cream:#f7f2e8;--cream2:#ede5d0;--red:#8b2020;--white:#fff;}
+body{font-family:Georgia,serif;background:var(--navy);color:var(--white);min-height:100vh}
+.screen{display:none;min-height:100vh;padding:20px 16px}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+#screen-quiz.active,#screen-results.active,#screen-admin.active{display:block;padding:16px}
+.logo{text-align:center;margin-bottom:26px}
+.logo-badge{display:inline-block;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);border-radius:8px;padding:6px 18px;color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:11px}
+.logo h1{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:5px}
+.logo p{color:var(--cream2);font-size:13px;font-style:italic}
+.card{background:rgba(26,47,84,.95);border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:24px 20px;width:100%;max-width:420px}
+.card h2{font-size:15px;color:var(--gold);margin-bottom:5px}
+.card p{font-size:13px;color:var(--cream2);margin-bottom:16px;line-height:1.6}
+input[type=text],input[type=password],select{width:100%;padding:12px 13px;border-radius:10px;font-size:14px;border:2px solid rgba(201,168,76,.3);background:rgba(0,0,0,.35);color:var(--white);outline:none;font-family:Georgia,serif;margin-bottom:10px;transition:border .2s;-webkit-appearance:none;appearance:none}
+select option{background:#1a2f54;color:var(--white)}
+input:focus,select:focus{border-color:var(--gold)}
+.btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:10px;font-size:14px;font-weight:700;color:var(--navy);cursor:pointer;font-family:Georgia,serif;}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-outline{background:transparent;border:2px solid var(--gold);color:var(--gold);margin-top:9px}
+.btn-red{background:var(--red);color:var(--white);margin-top:9px}
+.err{color:#ff9090;font-size:13px;margin-top:6px;text-align:center;display:none}
+.footer{text-align:center;margin-top:20px;color:rgba(255,255,255,.2);font-size:11px}
+.link-line{text-align:center;margin-top:18px}
+.link-line button{background:transparent;border:none;color:rgba(255,255,255,.3);font-size:11px;cursor:pointer;font-family:Georgia,serif;text-decoration:underline}
+.admin-wrap{max-width:540px;margin:0 auto;padding-bottom:30px}
+.admin-title{color:var(--gold);font-size:18px;font-weight:700;margin-bottom:4px;padding-top:10px}
+.admin-sub{color:rgba(255,255,255,.5);font-size:13px;margin-bottom:18px}
+.admin-sec{background:rgba(26,47,84,.8);border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:18px;margin-bottom:14px}
+.admin-sec h3{color:var(--gold);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.drop-zone{border:2px dashed rgba(201,168,76,.4);border-radius:12px;padding:26px 18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.drop-zone p{color:rgba(255,255,255,.6);font-size:13px;line-height:1.6}
+.drop-zone strong{color:var(--gold2)}
+.student-preview{background:rgba(0,0,0,.25);border-radius:10px;padding:12px;max-height:200px;overflow-y:auto;font-size:12px}
+.group-tag{display:inline-block;background:var(--navy2);border:1px solid rgba(201,168,76,.3);border-radius:6px;padding:3px 8px;color:var(--gold);font-size:11px;font-weight:700;margin:5px 3px 2px 0}
+.stu-item{display:inline-block;color:var(--cream2);font-size:12px;margin:2px 7px 2px 0}
+.st-ok{color:#90ee90;font-size:13px;margin-top:7px}
+.st-err{color:#ff9090;font-size:13px;margin-top:7px}
+.q-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.1)}
+.lec-tag{color:var(--gold);font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.stud-info{color:rgba(255,255,255,.5);font-size:11px;margin-top:2px}
+.q-counter{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:4px 11px;color:var(--gold);font-size:13px;font-weight:700}
+.score-strip{display:flex;gap:6px;margin-bottom:10px}
+.score-pill{flex:1;background:rgba(255,255,255,.06);border-radius:8px;padding:6px 4px;text-align:center}
+.sp-label{color:rgba(255,255,255,.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.sp-val{font-weight:700;font-size:14px}
+.progress-bar{background:rgba(255,255,255,.12);border-radius:6px;height:6px;margin-bottom:14px}
+.progress-fill{height:100%;border-radius:6px;background:var(--gold);transition:width .4s ease}
+.q-card{background:rgba(26,47,84,.92);border:1px solid rgba(201,168,76,.2);border-radius:16px;padding:18px 16px}
+.q-badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:4px 11px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.q-badge.mcq{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
+.q-badge.gap{background:rgba(100,50,200,.2);color:#c8a8ff;border:1px solid rgba(150,80,255,.3)}
+.hint-box{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--cream2);line-height:1.6}
+.word-bank{margin-bottom:14px}
+.wb-label{color:rgba(255,255,255,.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.wb-words{display:flex;flex-wrap:wrap;gap:7px}
+button.wb-word{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:8px;padding:6px 12px;font-size:12.5px;color:var(--gold2);cursor:pointer;font-family:Georgia,serif}
+button.wb-word:hover{background:rgba(201,168,76,.2);border-color:var(--gold)}
+span.wb-word.used{background:none;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;font-size:12.5px;color:rgba(255,255,255,.25);text-decoration:line-through}
+.hint-box strong{color:var(--gold2)}
+.gap-sentence{font-size:16px;line-height:2.2;color:var(--white);margin-bottom:14px;background:rgba(0,0,0,.2);border-radius:10px;padding:14px 16px}
+.gap-blank{display:inline-block;border-bottom:3px solid var(--gold);min-width:130px;text-align:center;color:var(--gold2);font-weight:700;padding:0 6px;margin:0 4px}
+.gap-blank.answered{color:#90ee90;border-color:#2D6A2D}
+.gap-blank.wrong-ans{color:#ff9090;border-color:#8b2020}
+.gap-input{width:100%;padding:11px 13px;border-radius:10px;font-size:14px;border:2px solid rgba(201,168,76,.4);background:rgba(0,0,0,.3);color:var(--white);outline:none;font-family:Georgia,serif;transition:border .2s;margin-bottom:4px}
+.gap-input:focus{border-color:var(--gold)}
+.gap-input.correct-input{border-color:#2D6A2D;background:rgba(30,92,30,.15)}
+.gap-input.wrong-input{border-color:#8b2020;background:rgba(139,32,32,.15)}
+.options{display:flex;flex-direction:column;gap:8px}
+.opt{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:flex-start;gap:9px;color:var(--cream2);font-size:13px;line-height:1.5;text-align:left;width:100%;font-family:Georgia,serif;transition:all .2s}
+.opt.selected{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold2)}
+.opt.correct{background:rgba(30,92,30,.25);border-color:#2D6A2D;color:#90ee90}
+.opt.wrong{background:rgba(139,32,32,.25);border-color:#8b2020;color:#ff9090}
+.opt-letter{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.opt.selected .opt-letter{border-color:var(--gold);color:var(--gold)}
+.opt.correct .opt-letter{border-color:#2D6A2D;color:#90ee90}
+.opt.wrong .opt-letter{border-color:#8b2020;color:#ff9090}
+.fb-box{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.6}
+.fb-ok{background:rgba(30,92,30,.15);border:1px solid rgba(45,106,45,.4);color:#90ee90}
+.fb-ko{background:rgba(139,32,32,.15);border:1px solid rgba(139,32,32,.4);color:#ff9090}
+.q-actions{margin-top:14px;display:flex;gap:9px;justify-content:flex-end}
+.btn-sm{padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:Georgia,serif;background:var(--gold);color:var(--navy)}
+.btn-sm:disabled{background:rgba(201,168,76,.25);color:rgba(201,168,76,.5);cursor:not-allowed}
+.results-wrap{max-width:500px;margin:0 auto;padding-bottom:30px}
+.r-header{background:rgba(26,47,84,.92);border:2px solid var(--gold);border-radius:18px;padding:24px 20px;text-align:center;margin-bottom:13px}
+.r-label{color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:3px}
+.r-name{font-size:18px;font-weight:700;margin-bottom:2px;margin-top:6px}
+.r-group{color:rgba(255,255,255,.4);font-size:12px;margin-bottom:2px}
+.r-title{color:var(--gold2);font-size:12px;font-style:italic;margin-bottom:18px}
+.total-box{background:rgba(201,168,76,.12);border:2px solid var(--gold);border-radius:12px;padding:14px;text-align:center;margin-bottom:16px}
+.t-label{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+.t-val{font-size:36px;font-weight:700;color:var(--white)}
+.t-grade{font-size:18px;font-weight:700;margin-top:4px}
+.scores-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.s-box{background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px 8px;text-align:center}
+.s-label{color:rgba(255,255,255,.5);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.s-val{font-size:22px;font-weight:700}
+.sheet-badge{border-radius:10px;padding:10px 13px;margin-bottom:10px;text-align:center;font-size:12px}
+.sheet-ok{background:rgba(30,92,30,.2);border:1px solid rgba(45,106,45,.4);color:#90ee90}
+.sheet-fail{background:rgba(139,32,32,.15);border:1px solid rgba(139,32,32,.3);color:#ff9090}
+.sheet-wait{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold2)}
+.copy-box{background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:11px 13px;font-size:12px;color:var(--cream2);line-height:1.7;margin-bottom:8px;word-break:break-word}
+.review-h{color:rgba(255,255,255,.5);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;margin-top:14px}
+.ri{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-radius:8px;margin-bottom:5px;font-size:12px;line-height:1.5}
+.ri.ok{background:rgba(30,92,30,.12);border:1px solid rgba(45,106,45,.25)}
+.ri.ko{background:rgba(139,32,32,.12);border:1px solid rgba(139,32,32,.25)}
+.ri-icon{flex-shrink:0;font-weight:700;font-size:13px}
+.ri.ok .ri-icon{color:#90ee90}
+.ri.ko .ri-icon{color:#ff9090}
+.ri-q{color:var(--cream2);margin-bottom:2px}
+.ri-ans{color:#ff9090;font-style:italic;font-size:11px}
+.ri-correct{color:#90ee90;font-style:italic;font-size:11px}
+.r-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+
+.timer-bar{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(26,47,84,.7);border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:8px 14px;margin-bottom:10px;text-align:center}
+.timer-label{color:rgba(255,255,255,.5);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.timer-val{font-size:22px;font-weight:700;color:var(--gold);font-family:Georgia,serif;min-width:52px;text-align:center;transition:color .3s}
+.timer-val.warning{color:#ffcc80}
+.timer-val.danger{color:#ff6060;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-bar.danger-bar{border-color:rgba(255,96,96,.5);background:rgba(139,32,32,.2)}
+
+.fb-neutral{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--cream2)}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<!-- PASSWORD -->
+<div class="screen active" id="screen-password">
+  <div class="logo">
+    <div class="logo-badge">Mohamed-Cherif Messaadia University &middot; Souk Ahras</div>
+    <h1>Literature: Theory &amp; Practice</h1>
+    <p>Extra Quiz &mdash; Mrs Dalloway and Modernism (Group 3) &middot; <span id="cfg-ly">L3 &middot; 2026&ndash;2027</span></p>
+  </div>
+  <div class="card">
+    <h2>Quiz Password</h2>
+    <p>Enter the password your lecturer writes on the board, then tap Start Quiz.</p>
+    <input type="password" id="pw-input" placeholder="Password&hellip;" autocomplete="off">
+    <div class="err" id="pw-error">Incorrect password. Please try again.</div>
+    <button class="btn" id="pw-btn" onclick="checkPw()">Start Quiz &rarr;</button>
+  </div>
+  <div class="footer">Department of English &middot; Dr. Boumous</div>
+</div>
+
+<!-- ADMIN -->
+<div class="screen" id="screen-admin">
+  <div class="admin-wrap">
+    <div class="admin-title">Admin Panel</div>
+    <div class="admin-sub">Upload your student list.</div>
+    <div class="admin-sec">
+      <h3>Upload Student List (CSV)</h3>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <p>Click to select your CSV file or drag and drop here<br>
+        <strong>CSV format only (.csv)</strong><br>
+        <em style="font-size:11px;color:rgba(255,255,255,.4)">In Excel: File &rarr; Save As &rarr; CSV</em></p>
+      </div>
+      <input type="file" id="file-input" accept=".csv" style="display:none" onchange="loadFile(this)">
+      <div id="upload-status"></div>
+      <div class="student-preview" id="student-preview" style="display:none"></div>
+      <button class="btn" style="margin-top:11px" onclick="saveStudentList()" id="btn-save-list" disabled>Save Student List</button>
+      <div id="save-status"></div>
+    </div>
+    <div class="admin-sec">
+      <h3>Current List</h3>
+      <div id="current-list-info" style="color:rgba(255,255,255,.5);font-size:13px">No list loaded.</div>
+      <button class="btn btn-red" style="margin-top:11px" onclick="clearList()">Clear Student List</button>
+    </div>
+    <div class="admin-sec">
+      <h3>CSV File Format</h3>
+      <p style="color:var(--cream2);font-size:13px;line-height:1.8;margin:0">
+        Column A: <strong style="color:var(--gold2)">Group</strong> (e.g. Group 1)<br>
+        Column B: <strong style="color:var(--gold2)">Student Name</strong> (e.g. Ahmed Benali)<br>
+        First row = header. Save from Excel as CSV.
+      </p>
+    </div>
+    <div class="admin-sec">
+      <h3>This Lecture</h3>
+      <p style="color:var(--cream2);font-size:13px;line-height:1.8;margin:0">
+        Lecture 6 &middot; Mrs Dalloway and Modernism (Group 3)<br>
+        Virginia Woolf and the modernist novel<br>
+        20 questions &middot; 20 statement questions &middot; timed questions
+      </p>
+    </div>
+    <button class="btn btn-outline" onclick="showScreen('screen-password')">&#8592; Back</button>
+  </div>
+</div>
+
+<!-- STUDENT SELECT -->
+<div class="screen" id="screen-student">
+  <div class="card" style="max-width:420px">
+    <h2 style="color:var(--gold);margin-bottom:3px">Extra Quiz &mdash; Mrs Dalloway and Modernism (Group 3)</h2>
+    <p style="color:var(--gold2);font-style:italic;font-size:12px;margin-bottom:14px">Virginia Woolf and the modernist novel</p>
+    <p>Select your group and your name to begin.</p>
+    <p id="rules-note" style="color:#ff9090;font-size:12px;line-height:1.6"></p>
+    <select id="group-select" onchange="filterStudents()"><option value="">&#8212; Select your group &#8212;</option></select>
+    <select id="student-select" disabled onchange="onNameChange()"><option value="">&#8212; Select your name &#8212;</option></select>
+    <div id="new-name-box" style="display:none"><input type="text" id="new-name" placeholder="SURNAME First name" autocomplete="off"><p style="font-size:11px;color:rgba(255,255,255,.5);margin:-4px 0 10px;line-height:1.5">Write your surname, then your first name, as on the official list. Your lecturer will check it.</p></div>
+    <div class="err" id="stu-error">Please select your group and name.</div>
+    <button class="btn" style="margin-top:4px" onclick="beginQuiz()">Start Quiz &rarr;</button>
+  </div>
+  <div class="footer">20 questions &middot; 20 statement questions &middot; Score out of <span id="foot-max">16</span> &middot; timed questions</div>
+  <div class="link-line"><button onclick="resetSession()">Lecturer: Reset Session</button></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="q-topbar">
+    <div><div class="lec-tag" id="q-lec-tag"></div><div class="stud-info" id="q-stud-info"></div></div>
+    <div class="q-counter" id="q-counter"></div>
+  </div>
+  <div class="timer-bar" id="timer-bar">
+    <div>
+      <div class="timer-label">Total time left</div>
+      <div class="timer-val" id="timer-val">15:00</div>
+    </div>
+    <div style="margin-left:28px">
+      <div class="timer-label">This question</div>
+      <div class="timer-val" id="qtimer-val">30s</div>
+    </div>
+  </div>
+  <div class="score-strip" style="display:none">
+    <div class="score-pill"><div class="sp-label">MCQ</div><div class="sp-val" id="live-mcq" style="color:var(--gold)">0/10</div></div>
+    <div class="score-pill"><div class="sp-label">Gap</div><div class="sp-val" id="live-gap" style="color:#c8a8ff">0/10</div></div>
+    <div class="score-pill"><div class="sp-label" id="live-total-label">Score /20</div><div class="sp-val" id="live-total" style="color:var(--gold2)">0</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="q-progress"></div></div>
+  <div class="q-card">
+    <div class="q-badge" id="q-badge"></div>
+    <div id="q-body"></div>
+    <div class="fb-box" id="q-fb" style="display:none"></div>
+    <div class="q-actions" id="q-actions"></div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="results-wrap">
+    <div class="r-header">
+      <div class="r-label" id="res-max-label">Quiz Complete &middot; Score out of 20</div>
+      <div class="r-name" id="r-name"></div>
+      <div class="r-group" id="r-group"></div>
+      <div class="r-title" id="r-title"></div>
+      <div class="total-box">
+        <div class="t-label">Final Score</div>
+        <div class="t-val" id="r-total"></div>
+        <div class="t-grade" id="r-grade"></div>
+      </div>
+      <div class="scores-grid">
+        <div class="s-box"><div class="s-label">MCQ</div><div class="s-val" id="r-mcq" style="color:var(--gold)"></div></div>
+        <div class="s-box"><div class="s-label">Gap</div><div class="s-val" id="r-gap" style="color:#c8a8ff"></div></div>
+        <div class="s-box"><div class="s-label">Percent</div><div class="s-val" id="r-pct"></div></div>
+      </div>
+    </div>
+    <div id="sheet-status"></div>
+    <div class="copy-box" id="copy-box"></div>
+    <button class="btn btn-outline" style="margin-bottom:14px" onclick="copyResult()">Copy My Result</button>
+    <div id="reveal-note" class="footer" style="display:none;margin:0 0 10px;font-size:12px;line-height:1.6"></div>
+    <div class="review-h" style="display:none">MCQ Review (10 questions)</div>
+    <div id="r-mcq-review" style="display:none"></div>
+    <div class="review-h" style="display:none">Fill-in-the-Gap Review (10 questions)</div>
+    <div id="r-gap-review" style="display:none"></div>
+    <div class="r-actions">
+      <button class="btn btn-outline" id="btn-retry" onclick="adminUnlockRetry()" style="border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.35);font-size:12px;padding:10px">Retry locked &mdash; lecturer only</button>
+    </div>
+    <div class="footer">Literature: Theory &amp; Practice &middot; University of Souk Ahras</div>
+    <div class="link-line"><button onclick="resetSession()">Lecturer: Reset Session</button></div>
+  </div>
+</div>
+
+<script>
+
+// ============================================================
+//  LECTURE CONTENT — this file covers ONE lecture only.
+// ============================================================
+let LECTURE={"num": 14, "title": "Mrs Dalloway and Modernism", "author": "Virginia Woolf and the modernist novel", "group": 3, "draw": 20, "secMcq": 60, "questions": [{"type": "mcq", "q": "The novel opens: ‘Mrs Dalloway said she would buy the flowers herself.’ Which statement best describes how the narration then proceeds?", "opts": ["The narration is a first-person memoir written by Clarissa many years later, so every thought of the other characters is her imaginative reconstruction of what they must have felt on that day.", "The narration is strictly objective, recording only what can be seen and heard from outside, so that the reader must infer every thought from the behaviour and the speech of each character in the scene.", "The narration places each thought inside quotation marks, which is why the novel can be read as a series of letters and diary entries that the characters exchange with one another over the day.", "The narration slides between third-person report and a character’s thoughts without quotation marks, so events arrive already coloured by a consciousness and narrator and character cannot be cleanly separated."], "ans": 3}, {"type": "mcq", "q": "Woolf wrote in her diary of digging ‘caves’ behind her characters that connect and come to daylight in the present moment. Which statement best relates this to the novel?", "opts": ["The method opens each character’s past, such as Clarissa’s memories of Bourton, into the present, so that a single day carries layers of memory and the present is shown as layered rather than linear.", "The method means that Woolf outlined the events in her diary and the novel records those entries one by one, so the finished text is a transcription of a single day in her own life.", "The method refers to a plot about a physical tunnel through which Peter Walsh arrives from India, and the underground journey occupies the whole of the first section of the novel.", "The method means that the novel moves in a straight line from morning to evening without memories or digressions, so each hour of the day is reported in the order in which it was lived, without a single flashback."], "ans": 0}, {"type": "mcq", "q": "Which statement best explains how clock time works in the novel?", "opts": ["The novel ignores clocks and measures events only by the changing weather over the day, so that there is no public time at all and every hour is described through the light in the sky, with the single clock in the book being broken.", "Bells and clocks mark public time and carry the narrative from one mind to the next, while the characters’ private time of memory runs on a different scale, so the novel plays the two against each other.", "Big Ben is mentioned once, near the end, to mark the moment of Septimus’s death, and it has no other role in the structure of the day or in the shifting of the narration between minds.", "Public time and private time coincide exactly, so every character experiences each hour in the way that the clocks announce it and nobody’s memory ever intrudes upon the present."], "ans": 1}, {"type": "mcq", "q": "The motor car that backfires in Bond Street and the skywriting aeroplane are seen by many characters. Which statement best describes their narrative function?", "opts": ["They are symbols of the war that every character understands in exactly the same way, so each of them reacts to the car and the aeroplane with an identical memory of the front.", "They interrupt the narration and are never mentioned again, so they add local colour to the day without any effect on the structure of the book or on the relations among its characters, and no character mentions them afterwards.", "They prove that all the characters see the same thing and reach the same conclusion about it, so they unify the opinions of a London crowd that is otherwise divided in its views.", "They pass the narration from one mind to another while showing how each character reads the same sign differently, so a shared public event links separate private worlds without making them the same."], "ans": 3}, {"type": "mcq", "q": "The novel takes place on a day in mid-June 1923. Which statement most accurately describes its structure?", "opts": ["The novel follows Septimus alone for the whole of the day, and Clarissa appears only in his hallucinations, so the party is something that he imagines rather than an event within the plot.", "The action covers one day, but the narrative expands outward through memory and shifts between minds, so the compression of time is balanced by an expansion of consciousness.", "The novel covers a full year and records each month in a separate chapter with its own heading, and the single day of the party is only the final entry in a long chronicle of the season.", "The novel is divided into numbered chapters, each narrated by a different character who speaks directly to the reader, and the chapters follow one another in strict order from morning to night."], "ans": 1}, {"type": "mcq", "q": "The novel closes with Peter’s thought, ‘It is Clarissa, he said. For there she was.’ Which statement is best supported?", "opts": ["The ending resolves the plot by showing that Peter and Clarissa will now marry, since Richard has died during the evening and the obstacle to their old love has at last been removed.", "The ending reveals that Clarissa died in the night and that Peter is speaking to her ghost, so the whole of the party has been a vision that takes place after her death.", "The ending gives Clarissa presence through another’s perception, so the novel stops on a moment of recognition rather than on the resolution of a plot.", "The ending is Clarissa’s own thought, in which she declares that she has found the meaning of her life in the party and that she will never again doubt the choices that she has made."], "ans": 2}, {"type": "mcq", "q": "In a later introduction Woolf said that Septimus, who was not in her first plan, was intended as Clarissa’s double. Which statement best develops this idea?", "opts": ["Septimus and Clarissa never meet, yet the novel links them through shared images, the Cymbeline lines, the bells and the window, so the doubling works by parallel and echo rather than by plot contact.", "Septimus and Clarissa are the same person at different ages, which Woolf makes explicit in the first chapter, and the rest of the novel simply alternates between the two periods of that life, as the title of the final part suggests.", "The doubling shows that Clarissa also served in the war and suffered the same illness as Septimus, and the novel reveals in its last pages that she too has been treated by Bradshaw.", "Septimus and Clarissa meet in the park and talk for an hour, and the doubling is the result of that conversation, in which each discovers that the other has suffered the same loss."], "ans": 0}, {"type": "mcq", "q": "After hearing of a stranger’s suicide, Clarissa thinks: ‘Death was defiance. Death was an attempt to communicate.’ Which statement best describes her response?", "opts": ["She condemns Septimus as a coward whose death spoils her party, a view that she shares with Dr Holmes, and she dismisses the news as an unwelcome intrusion into the evening.", "She reads the death as a defiance of an order that would have destroyed his inner life, and her identification with him is an act of imagination that deepens her sense of being alive rather than a wish to die.", "She hears the news with complete indifference and has forgotten the matter by the end of the evening, which shows how little the death of a stranger can mean to a woman of her class, and the guests treat the news as a mere anecdote.", "She decides to take her own life and the novel ends with her death at the window, so her reflection on the stranger is the last thought that she has before she falls."], "ans": 1}, {"type": "mcq", "q": "Which statement best describes the function of Sir William Bradshaw in the novel?", "opts": ["He is an old friend of Peter Walsh who treats Clarissa’s heart condition and is praised throughout the novel for his gentleness, patience and his willingness to listen to his patients.", "He is a minor figure who appears only at Clarissa’s party and has no connection with Septimus, so his remark about the young man’s death is the only role that he plays in the story.", "He embodies a medical and social authority that treats deviation as illness and compels conformity in the name of ‘proportion’, and the narration presents this power as destructive rather than healing.", "He is the moral centre of the novel, whose advice to rest saves Septimus from despair, and the narration endorses his authority as the voice of reason in a confused and distressed society, as his title suggests."], "ans": 2}, {"type": "mcq", "q": "Septimus cannot feel when Evans is killed. Which statement best describes how the novel treats his condition?", "opts": ["His condition is shown to be a simple lack of will, and the novel agrees with Dr Holmes that he should pull himself together and take an interest in his wife and in his work.", "His numbness is presented as a trauma produced by the war, which the society around him misreads as personal weakness, so the novel shows an illness that its institutions cannot recognise.", "He is physically wounded in the war, and his distress is caused entirely by the pain of an injury that was never treated, so the novel has no interest in his state of mind.", "The novel shows that Septimus had always been unstable and that the war had no effect on his condition, which is why his friends and his employers were not surprised by his collapse, as they later testified."], "ans": 1}, {"type": "mcq", "q": "Peter Walsh has returned from years of service in India. Which statement best describes how the novel connects private lives to empire?", "opts": ["India appears only in Septimus’s hallucinations and is never connected with any other character, so the imperial theme belongs to the madman’s inner world and not to the social world of the novel.", "The novel is uninterested in empire, and Peter’s years in India are mentioned only to explain his sunburnt face and his habit of opening and closing his pocket-knife during conversation.", "Peter’s Indian career and the imperial processions through London tie domestic scenes to imperial power, and Woolf’s irony about authority invites readers to see the drawing room as sustained by it.", "The novel is a defence of the empire in which Peter’s service is held up as a model of duty, and the narration invites the reader to admire the order that his work has secured."], "ans": 2}, {"type": "mcq", "q": "Clarissa thinks of her parties as an offering: ‘to combine, to create’. Which statement is best supported?", "opts": ["The party is a small private dinner for Clarissa and Peter alone, and the Prime Minister is a figment of her imagination that she invents to make the evening seem more distinguished.", "The party is presented as a form of creation and connection set against death, though the novel also shows its snobbery and exclusions, so it is both a gift and a limit.", "The parties are shown as pure vanity with no value at all, and the novel mocks Clarissa from beginning to end without ever allowing the reader to share her sense of what they might achieve.", "The party is a political rally organised by Richard to win votes for his campaign, which is why the Prime Minister attends and why the guests are chosen for their usefulness to the cause."], "ans": 1}, {"type": "mcq", "q": "Clarissa recalls Sally Seton’s kiss at Bourton as ‘the most exquisite moment of her whole life’. Which statement best describes its role?", "opts": ["The kiss is Septimus’s memory of Evans, transferred to Clarissa by a confusion in the narration, so the passage is really an account of the war and not of her youth.", "The memory sets an intense moment of desire against the quieter regard of her marriage, so it opens a space that her present life only partly answers.", "The kiss shows that Clarissa regrets her marriage, and she leaves Richard at the end of the day to join Sally in the country, where the two of them intend to live together.", "The kiss is a malicious rumour that Peter spreads in order to wound her, and Clarissa denies it throughout the novel because she believes that it will ruin her husband’s career."], "ans": 1}, {"type": "mcq", "q": "Which statement best describes Woolf’s treatment of Miss Kilman?", "opts": ["Kilman is an unambiguous villain whom the narrator mocks without sympathy at any point, and the reader is never invited to understand the circumstances that have made her bitter.", "Kilman is a heroic figure whose religious convictions save Elizabeth from her mother’s snobbery, and the novel endorses her as the one character who sees the emptiness of the party, and Clarissa herself comes to agree.", "Kilman is seen through Clarissa’s hatred and through her own, so she is both a figure of religious and class resentment and a woman wounded by exclusion, and the narration resists a single verdict.", "Kilman is Clarissa’s sister, and the quarrel between them over their inheritance is the central plot of the novel, which is resolved when they are reconciled at the party."], "ans": 2}, {"type": "mcq", "q": "The line ‘Fear no more the heat o’ the sun’ from Shakespeare’s Cymbeline recurs in the novel. Which statement best describes its function?", "opts": ["The lines are a warning that sunstroke will occur in the heat of June, and they have no relevance to the characters’ thoughts about death or to the connection between them.", "The lines appear only once and only in Peter’s mind, where they serve to mock his sentimentality, and neither Clarissa nor Septimus ever encounters them during the day.", "The funeral song recurs in the minds of both Clarissa and Septimus, binding them through a shared phrase about release from life’s burdens, and it shapes Clarissa’s later response to the death.", "The lines are a fragment of Septimus’s own poetry, which Clarissa reads in a newspaper and quotes to her guests at the party as evidence of the talent that was wasted in the war, which the narrator quotes in full."], "ans": 2}, {"type": "mcq", "q": "Clarissa sleeps in a narrow bed in an attic room. Which statement best describes what this suggests about her marriage?", "opts": ["The narrow bed suggests a marriage that accommodates her privacy while exposing its quiet losses, so intimacy and independence are bargained against each other.", "The narrow bed symbolises Clarissa’s great wealth, since it was inherited from the royal family, and it shows that her way of life is one of luxury that cannot be shared.", "The narrow bed is the bed in which Septimus dies, which Clarissa visits at the end of the evening, and it marks the point at which the two stories are physically joined.", "The narrow bed is a sign that Clarissa and Richard have separated legally and live in different houses, so the marriage described in the novel has in fact ended before the day begins."], "ans": 0}, {"type": "mcq", "q": "Early in the novel a motor car backfires in Bond Street and the crowd wonders who is inside. Which statement best describes the episode?", "opts": ["The crowd identifies the Queen at once and cheers, which confirms that public authority is universally and gladly recognised and that the war has not shaken the people’s loyalty to the crown.", "The car carries Septimus to the hospital, and the crowd’s reaction shows its sympathy for the mentally ill, a sympathy that is later contrasted with the cruelty of the doctors.", "The crowd’s hush and speculation show how a symbol of authority can gather attention while its content stays hidden, and the episode also passes the narration from mind to mind along the street.", "The explosion is a bomb set by an anarchist, and the crowd’s panic leads to the arrest of Peter Walsh, whose imprisonment becomes the main problem that Clarissa has to solve before her party."], "ans": 2}, {"type": "mcq", "q": "In ‘The Dead’ Michael Furey’s death comes to Gabriel after a party; in Mrs Dalloway Septimus’s death reaches Clarissa during hers. Which comparison is best supported?", "opts": ["In both works a gathering is interrupted by the thought of a death that makes the central figure reconsider their life, but Joyce places the recognition after the party and Woolf inside it.", "In neither work does death enter the gathering: both parties are untroubled by any thought of mortality, and the endings concern only the social success of the hosts and their guests.", "In both works the central figure is the hostess, and she decides to leave her husband at the end of the party, so each ending is a departure from a marriage that has become intolerable.", "In both works the party ends happily with a reconciliation between the central figure and the person who had caused offence, and the death is mentioned only as a distant piece of news."], "ans": 0}, {"type": "mcq", "q": "Gabriel ends at a window watching the snow; Clarissa goes to a window and sees an old woman preparing for bed. Which comparison is most defensible?", "opts": ["Neither text uses a window: both stay within a single room throughout, and their endings are made from conversation alone without any image of the world outside the house.", "In both texts the window is the place from which the central figure throws himself or herself, so each work ends with a death that is described in the same terms.", "In both texts the window is a place of triumph, from which the characters declare their victory over the past, and each looks out on a world that has been made new by what they have learned.", "Both end at a window looking out on others’ lives, and the window figures both separation and communion, but Gabriel’s gaze widens to a universal vision while Clarissa’s returns her to her guests."], "ans": 3}, {"type": "mcq", "q": "Which statement best compares Mrs Dalloway with Yeats’s ‘The Second Coming’ as responses to the aftermath of the war?", "opts": ["Both register a world in which central authority is failing; Yeats projects the collapse as a vision of disorder, while Woolf places it in a man whose trauma the authorities misdiagnose.", "Yeats’s poem is realistic and Woolf’s novel is a lyric, so the two differ in genre but agree in celebrating the end of the war and the beginning of a more peaceful and rational age.", "Both texts celebrate the restoration of authority after the war: in the poem the falconer is heard again, and in the novel Bradshaw heals Septimus and restores him to his place in society.", "Both depict the end of the war as the beginning of a golden age, with rational government and scientific medicine replacing the disorder of the old world and bringing comfort to the survivors."], "ans": 0}, {"type": "mcq", "q": "Which statement best compares the treatment of London in Mrs Dalloway and in Eliot’s The Waste Land?", "opts": ["Neither text mentions bells or clocks, and both place their action in the countryside, where the survivors of the war find a calm that the capital could not offer in the first years of peace.", "Both place London’s bells and clocks over a society haunted by the war dead, but Eliot fragments the experience into quoted voices while Woolf follows individual minds.", "In both texts the bells announce a victory and are heard with joy by all the characters, so London appears as a city celebrating the end of the war and the return of its soldiers.", "Both texts are written in the same verse form and share the same speaker, a London clerk who walks to work over the bridge and records his impressions of the crowd as he goes."], "ans": 1}, {"type": "mcq", "q": "Septimus leaps from a window; Eliot’s Phlebas is drowned. Which comparison is best supported?", "opts": ["In both works the dead person is revealed to be Tiresias, who survives the death and continues to narrate what follows, so each death is a transformation and not an end.", "Both are suicides committed to avoid military conscription, which is why each is described in the same terms, and both authors treat the act as a political protest against the war.", "Both present a death as a dissolution that the living must reckon with, but Phlebas is addressed in a few impersonal lines while Septimus’s death prompts Clarissa’s reflection.", "Both deaths are treated as comic episodes that the authors use to relieve the tension of their works, and neither is allowed to affect the thoughts of the living characters who hear of it."], "ans": 2}, {"type": "mcq", "q": "Which statement best compares the use of free indirect style in ‘The Dead’ and Mrs Dalloway?", "opts": ["Only Woolf uses free indirect style; Joyce’s story is told entirely in dialogue and external description, and the thoughts of Gabriel are never reported in any form at any point.", "Both restrict the narration to a single consciousness throughout, and neither ever enters the thoughts of any other character, so the two works differ only in the length of the day that they cover.", "Both blur narrator and character, but Joyce keeps it mainly within Gabriel’s viewpoint while Woolf moves across many consciousnesses, so her narration passes between minds in a way that his does not.", "Both are told by a first-person narrator who addresses the reader directly in the manner of a diary, so free indirect style is irrelevant to the way in which either of them is written."], "ans": 2}, {"type": "mcq", "q": "Joyce’s ‘epiphany’ and Woolf’s ‘moments of being’ both name sudden perceptions. Which comparison is the most defensible?", "opts": ["Neither writer admits sudden moments of insight; both insist that character is revealed only through the slow accumulation of detail, so the endings of their works contain no moment of recognition at all.", "They are the same concept under two names, coined by the same author in the same year, and critics use them interchangeably to describe the endings of Joyce’s stories and of Woolf’s novels.", "Joyce’s epiphany is a religious conversion and Woolf’s moment of being is a political awakening, so they differ in subject and have no formal similarity in the way that they are presented.", "Both are sudden perceptions that reveal something beneath the surface, but Joyce’s epiphanies tend to arrive as one recognition near a story’s end, while Woolf’s are spread across the day in many minds."], "ans": 3}, {"type": "mcq", "q": "Which of the following is the LEAST defensible statement about ‘The Dead’, ‘The Second Coming’, The Waste Land and Mrs Dalloway?", "opts": ["Two of them, ‘The Dead’ and Mrs Dalloway, are built around a party at which a thought of death intrudes, though the party occupies a different place in the design of each work.", "Two of them, ‘The Second Coming’ and The Waste Land, are poems that end without a settled resolution, though one ends on a question and the other on a Sanskrit formula.", "Two of them, The Waste Land and Mrs Dalloway, are set largely in London and attend to the sounds and the crowds of the city, though in very different forms and with very different techniques.", "All four were written in the aftermath of the First World War and respond to it directly in their characters and imagery, which is why they are normally read as post-war texts."], "ans": 3}, {"type": "mcq", "q": "A student writes: ‘Mrs Dalloway is just a novel about a woman giving a party, so it is trivial.’ Which response is strongest?", "opts": ["The claim mistakes the surface for the whole: the party frames a meditation on time, death, war and the limits of social life, and its attention to small things argues that ordinary consciousness matters.", "The claim is correct, since all modernist novels avoid serious subjects in favour of style, and Mrs Dalloway is simply one more example of the movement’s preference for surface over substance.", "The claim is wrong, because the party is never actually described in the novel, which ends before the guests arrive, and so the book is really about the preparations for an event that never takes place.", "The claim is correct, because nothing of importance can happen in a novel confined to a single day, and so a work of that kind can have no serious theme or sustained argument."], "ans": 0}, {"type": "mcq", "q": "A student writes: ‘Septimus is a minor character who is there only to be killed.’ Which response is strongest?", "opts": ["The claim is right: Septimus does not appear until the final page and has no relationship with the other characters, so his death is a coincidence that the novel mentions in passing.", "Septimus is structurally central: his perspective carries the war’s aftermath into the day, his death reorients Clarissa, and his treatment by Holmes and Bradshaw makes the novel’s social critique concrete.", "The claim is right, since Woolf cut him from the novel in the final draft and he survives only in her introduction, which is why his part in the book is so short and so incidental.", "The claim is wrong because Septimus is the novel’s narrator, who tells the whole story in the first person and describes Clarissa’s party from the point of view of an uninvited guest, an effect that is sustained to the last page."], "ans": 1}, {"type": "mcq", "q": "A student writes: ‘Woolf approves of Bradshaw because he is a successful doctor.’ Which response is strongest?", "opts": ["The narration’s irony and its images of Proportion and Conversion as goddesses that devour wills show disapproval, so the claim ignores tone: success in society is not the novel’s endorsement.", "The claim cannot be assessed, since the novel does not describe his methods or his attitudes and gives the reader no means of judging whether the author sympathises with him.", "The claim is correct, because Clarissa praises him at her party as the saviour of England’s mental health and thanks him in a speech for the care that he has given to the nation.", "The claim is correct, because the novel describes him in neutral and admiring terms and shows his treatment curing Septimus, whose recovery is one of the few happy events of the day, an impression strengthened by his calm manner."], "ans": 0}, {"type": "mcq", "q": "A student writes: ‘Clarissa’s identification with Septimus shows that she wants to die.’ Which response shows the strongest reading?", "opts": ["The claim is right, because the novel ends with her fatal fall from the window of her drawing room, and Peter’s final words are a response to the sight of her death.", "The claim is right, since Clarissa says explicitly to Peter that she will follow Septimus before the night is over, and the rest of the evening is a farewell to the people whom she loves.", "The claim is wrong, because Clarissa never learns of the death, which Bradshaw keeps secret in order to protect the party, so that her thoughts about Septimus are purely the narrator’s invention.", "The text suggests a more complex response: she feels kinship and a strange gladness at his refusal of compromise, but she returns to her party and to life."], "ans": 3}, {"type": "mcq", "q": "The novel is set in June 1923, five years after the war ended. Which statement best explains why this distance matters?", "opts": ["The gap is accidental: Woolf chose 1923 only because it was the year in which she began writing and she had no interest in the war or in its consequences for the people of London.", "The gap shows that the war ended in 1923, so the novel is set on the first day of peace, which explains the public celebrations and the sense of relief that the characters describe.", "The gap lets the novel show a society that has fully recovered, in which the war is remembered only in the speeches made at memorials and has no effect on the lives of the characters, as the final scenes make clear.", "The gap lets the novel show the war as a persisting condition, in Septimus’s trauma and the memorial atmosphere of London, so the society is shown living with its effects rather than moving beyond them."], "ans": 3}]};
+const BASE_LECTURE=LECTURE;
+const ALT_LECTURES={};
+(function(){try{Object.keys(ALT_LECTURES).forEach(function(n){if(localStorage.getItem('qp4_L'+n))LECTURE=ALT_LECTURES[n];});}catch(e){}})();
+
+// ============================================================
+//  CONFIG
+// ============================================================
+const QUIZ_GROUP=3;
+
+// Optional: paste a Google Apps Script Web App URL here to also log
+// results to a Google Sheet automatically. This is OPTIONAL — the
+// quiz works fully without it. If saving fails or this is left blank,
+// students still see their full result and a "Copy My Result" button
+// so nothing is ever lost.
+const SHEET_URL=(window.APP_CONFIG&&window.APP_CONFIG.sheetUrl)||"";
+
+// ---- Anti-cheating settings (change these numbers if needed) ----
+const SECONDS_MCQ=30;          // time allowed per multiple-choice question
+const SECONDS_GAP=45;          // time allowed per fill-in-the-gap question
+let TOTAL_SECONDS=900;       // overall limit for the whole quiz (15 minutes)
+const REVEAL_CORRECT=false;    // false = students see right/wrong only, never the correct answer
+const LEAVE_MODE='LOCK';       // 'LOCK' = quiz ends for good if the student leaves the page; 'LOG' = only record it
+const LEAVE_GRACE_SECONDS=3;   // window focus lost for longer than this (e.g. split screen) counts as leaving
+
+let SCORE_MAX=16;
+try{const _l=Number(localStorage.getItem(LKEY('qLimit')));if(_l>=300&&_l<=3600)TOTAL_SECONDS=_l;const _m=Number(localStorage.getItem(LKEY('qMax')));if(_m>=5&&_m<=100)SCORE_MAX=_m;}catch(e){}
+function pts(c){return Math.round(c*SCORE_MAX/20*100)/100;}
+function syncMaxLabels(){
+  const a=document.getElementById('foot-max');if(a)a.textContent=SCORE_MAX;
+  const b=document.getElementById('res-max-label');if(b)b.textContent='Quiz Complete \u00b7 Score out of '+SCORE_MAX;
+}
+syncMaxLabels();
+(function(){const c=window.APP_CONFIG||{};const e=document.getElementById('cfg-ly');if(e&&(c.level||c.year))e.textContent=(c.level||'')+' \u00b7 '+(c.year||'');})();
+function getGrade(s){
+  if(s>=17)return{g:"Excellent",c:"#90ee90"};
+  if(s>=15)return{g:"Tres Bien",c:"#b8e890"};
+  if(s>=13)return{g:"Bien",c:"#e8c96a"};
+  if(s>=10)return{g:"Assez Bien",c:"#c9a84c"};
+  if(s>=8)return{g:"Passable",c:"#ffcc80"};
+  return{g:"Insuffisant",c:"#ff9090"};
+}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function saveList(o){try{localStorage.setItem('sl4',JSON.stringify(o));}catch(e){}}
+function loadList(){try{const d=localStorage.getItem(LKEY('roster'));if(d)return JSON.parse(d);}catch(e){}const o={};o['Group '+QUIZ_GROUP]=[];return o;}
+function setRoster(names){const o={};o['Group '+QUIZ_GROUP]=Array.isArray(names)?names.slice():[];try{localStorage.setItem(LKEY('roster'),JSON.stringify(o));}catch(e){}return o;}
+let pendingList=null;
+let studentList={};
+
+const S={lec:null,group:null,name:null,cur:0,questions:[],mcqR:[],gapR:[],chosen:null,confirmed:false,saved:false,startTime:null,wordBank:[],qStart:null,leaves:0,awaySec:0,leftThisQ:false,finished:false,answered:false,leaveLocked:false,resent:false};
+
+// Every storage key below except the shared student roster is
+// namespaced per lecture (LECTURE.num) — all 10 quiz files live on
+// the same site/origin, so without this, finishing one lecture's
+// quiz would show that same result on every other lecture's link
+// opened afterward on the same browser.
+function LKEY(k){return k+'_L'+LECTURE.num;}
+function saveProgress(){try{localStorage.setItem(LKEY('qp4'),JSON.stringify({group:S.group,name:S.name,cur:S.cur,questions:S.questions,mcqR:S.mcqR,gapR:S.gapR,wordBank:S.wordBank,qStart:S.qStart,leaves:S.leaves,awaySec:S.awaySec}));}catch(e){}}
+function clearProgress(){try{localStorage.removeItem(LKEY('qp4'));localStorage.removeItem(LKEY('qStartTime'));}catch(e){}}
+function saveResult(){try{localStorage.setItem(LKEY('qr4'),JSON.stringify({group:S.group,name:S.name,mcqR:S.mcqR,gapR:S.gapR,locked:S.leaveLocked}));}catch(e){}}
+function clearResult(){try{localStorage.removeItem(LKEY('qr4'));}catch(e){}}
+// Restores saved state ONLY when it belongs to the student who just
+// picked their name. A different student on the same device always
+// gets a fresh start, so one person's results or half-finished quiz
+// can never block the next person.
+function checkForSavedState(name){
+  try{
+    const r=localStorage.getItem(LKEY('qr4'));
+    if(r){
+      const d=JSON.parse(r);
+      if(d.name===name){
+        S.lec=LECTURE;S.group=d.group;S.name=d.name;S.mcqR=d.mcqR;S.gapR=d.gapR;
+        S.leaveLocked=!!d.locked;showResults();return true;
+      }
+    }
+    const p=localStorage.getItem(LKEY('qp4'));
+    if(p){
+      const d=JSON.parse(p);
+      if(d.name===name){
+        S.lec=LECTURE;S.group=d.group;S.name=d.name;S.cur=d.cur;S.questions=d.questions;S.mcqR=d.mcqR;S.gapR=d.gapR;
+        S.wordBank=d.wordBank||[];S.qStart=d.qStart||null;S.leaves=d.leaves||0;S.awaySec=d.awaySec||0;
+        const st=localStorage.getItem(LKEY('qStartTime'));
+        S.startTime=st?parseInt(st,10):Date.now();
+        S.cur=S.mcqR.length+S.gapR.length;
+        if(S.cur>=S.questions.length){showScreen('screen-quiz');finishQuiz();return true;}
+        updateLive();showScreen('screen-quiz');
+        if(startTimer()===false)return true;
+        renderQ();return true;
+      }
+    }
+  }catch(e){}
+  return false;
+}
+function updateLive(){
+  const mo=S.mcqR.filter(r=>r.ok).length;const go=S.gapR.filter(r=>r.ok).length;
+  document.getElementById('live-mcq').textContent=mo+"/10";
+  document.getElementById('live-gap').textContent=go+"/10";
+  {const lt=document.getElementById('live-total-label');if(lt)lt.textContent='Score /'+SCORE_MAX;}
+  document.getElementById('live-total').textContent=pts(mo+go);
+}
+
+// PASSWORD — a single field. "Start Quiz" checks it against the
+// session password only. The Teacher Panel link (below the card)
+// asks for the master password separately, with its own prompt, so
+// the two never share a field or a button.
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw();});
+function unlockMessage(r){
+  const t=ms=>new Date(ms).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  switch(r&&r.code){
+    case 'NO_SESSION':return 'No quiz has been opened for your group yet. Wait for your lecturer.';
+    case 'WRONG_PW':return 'Incorrect password. Please check it and try again.';
+    case 'EARLY':return 'This quiz is not open yet. It opens at '+t(r.opens)+'.';
+    case 'CLOSED':return 'This quiz is closed.';
+    case 'BUSY':return 'Too many attempts. Wait one minute and try again.';
+  }
+  return (r&&r.msg)||'Could not check the password. Try again.';
+}
+async function checkPw(){
+  const v=document.getElementById('pw-input').value.trim();
+  const err=document.getElementById('pw-error');
+  const btn=document.getElementById('pw-btn');
+  const fail=m=>{err.textContent=m;err.style.display='block';};
+  const idle=()=>{btn.disabled=false;btn.innerHTML='Start Quiz &rarr;';};
+  if(!v){fail('Enter the password your lecturer gives you.');return;}
+  err.style.display='none';btn.disabled=true;btn.textContent='Checking...';
+  let r=null;
+  try{
+    const res=await fetch(SHEET_URL+'?'+new URLSearchParams({action:'unlock',lec:[BASE_LECTURE.num].concat(Object.keys(ALT_LECTURES)).join(','),grp:QUIZ_GROUP,pw:v,cb:Date.now()}));
+    r=await res.json();
+  }catch(e){idle();fail('Could not reach the server. Check your connection and try again.');return;}
+  idle();
+  if(r&&r.ok){
+    S.resumeOnly=false;
+    LECTURE=(r.lec&&ALT_LECTURES[r.lec])?ALT_LECTURES[r.lec]:BASE_LECTURE;
+    if(r.mins>=5&&r.mins<=60){TOTAL_SECONDS=r.mins*60;try{localStorage.setItem(LKEY('qLimit'),String(TOTAL_SECONDS));}catch(e){}}
+    if(r.max>=5&&r.max<=100){SCORE_MAX=r.max;try{localStorage.setItem(LKEY('qMax'),String(SCORE_MAX));}catch(e){}syncMaxLabels();}
+    studentList=setRoster(r.names);goToStudentSelect();return;
+  }
+  if(r&&r.code==='CLOSED'){
+    let held=false;
+    try{[BASE_LECTURE.num].concat(Object.keys(ALT_LECTURES).map(Number)).forEach(function(n){if(!held&&(localStorage.getItem('qp4_L'+n)||localStorage.getItem('qr4_L'+n))){held=true;LECTURE=(n===BASE_LECTURE.num)?BASE_LECTURE:ALT_LECTURES[n];}});}catch(e){}
+    if(held){S.resumeOnly=true;studentList=loadList();goToStudentSelect();return;}
+  }
+  if(r&&r.code==='WRONG_PW')document.getElementById('pw-input').value='';
+  fail(unlockMessage(r));
+}
+async function verifyTeacher(title){
+  const pw=prompt(title);
+  if(pw===null)return false;
+  try{
+    const res=await fetch(SHEET_URL+'?'+new URLSearchParams({action:'verify',key:pw,cb:Date.now()}));
+    const r=await res.json();
+    if(r&&r.auth)return true;
+    alert('Incorrect teacher password.');
+  }catch(e){alert('Could not reach the server to check the password.');}
+  return false;
+}
+async function openAdminPrompt(){
+  if(!(await verifyTeacher('Teacher password:')))return;
+  studentList=loadList();showCurrentListInfo();showScreen('screen-admin');
+}
+function goToStudentSelect(){
+  const gs=document.getElementById('group-select');
+  gs.innerHTML='<option value="">Select your group</option>';
+  const groups=Object.keys(studentList);
+  if(!groups.length){
+    gs.innerHTML='<option value="__free__">No list loaded</option>';
+    document.getElementById('student-select').disabled=true;
+  }else{
+    groups.sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;gs.appendChild(o);});
+    document.getElementById('student-select').innerHTML='<option value="">Select your name</option>';
+    document.getElementById('student-select').disabled=true;
+  }
+  document.getElementById('stu-error').style.display='none';
+  try{const gs2=document.getElementById('group-select');const want='Group '+QUIZ_GROUP;if([...gs2.options].some(o=>o.value===want)){gs2.value=want;filterStudents();}}catch(e){}
+  {const E=document.getElementById('stu-error');if(!(studentList['Group '+QUIZ_GROUP]||[]).length){E.textContent='No student list has been added for your group yet. Choose "My name is not in this list" and type your name.';E.style.display='block';}}
+  showScreen('screen-student');
+}
+
+// ADMIN - pure CSV, no external library
+function dragOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag');}
+function dragLeave(){document.getElementById('drop-zone').classList.remove('drag');}
+function dropFile(e){e.preventDefault();dragLeave();const f=e.dataTransfer.files[0];if(f)processFile(f);}
+function loadFile(input){if(input.files[0])processFile(input.files[0]);}
+function processFile(file){
+  const status=document.getElementById('upload-status');
+  const preview=document.getElementById('student-preview');
+  if(!file.name.toLowerCase().endsWith('.csv')){
+    status.innerHTML='<div class="st-err">Please upload a CSV file. In Excel: File &gt; Save As &gt; CSV.</div>';return;
+  }
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const rows=e.target.result.split(/\r?\n/).map(l=>l.split(',').map(c=>c.trim().replace(/^"|"$/g,'')));
+      const start=(rows[0]&&rows[0][0]&&rows[0][0].toLowerCase().includes('group'))?1:0;
+      const parsed={};
+      rows.slice(start).forEach(r=>{
+        const g=(r[0]||'').toString().trim();
+        const s=(r[1]||'').toString().trim();
+        if(!g||!s)return;
+        if(!parsed[g])parsed[g]=[];
+        if(!parsed[g].includes(s))parsed[g].push(s);
+      });
+      if(!Object.keys(parsed).length){status.innerHTML='<div class="st-err">No data found. Check columns: Group, Student Name</div>';return;}
+      pendingList=parsed;
+      let html='';let total=0;
+      Object.entries(parsed).forEach(([g,stus])=>{
+        html+='<div class="group-tag">'+g+' ('+stus.length+')</div>';
+        stus.forEach(s=>{html+='<span class="stu-item">'+s+'</span>';total++;});
+        html+='<br>';
+      });
+      preview.style.display='block';preview.innerHTML=html;
+      status.innerHTML='<div class="st-ok">Found '+total+' students in '+Object.keys(parsed).length+' group(s). Click Save.</div>';
+      document.getElementById('btn-save-list').disabled=false;
+    }catch(err){status.innerHTML='<div class="st-err">Error: '+err.message+'</div>';}
+  };
+  reader.readAsText(file);
+}
+function saveStudentList(){
+  if(!pendingList)return;
+  studentList=pendingList;saveList(studentList);
+  document.getElementById('save-status').innerHTML='<div class="st-ok">Saved successfully!</div>';
+  showCurrentListInfo();
+}
+function clearList(){
+  if(!confirm('Clear the student list?'))return;
+  localStorage.removeItem('sl4');studentList={};showCurrentListInfo();
+}
+function showCurrentListInfo(){
+  const el=document.getElementById('current-list-info');
+  const keys=Object.keys(studentList);
+  if(!keys.length){el.textContent='No list loaded.';return;}
+  const total=Object.values(studentList).reduce((a,b)=>a+b.length,0);
+  el.innerHTML='<span style="color:#90ee90">'+total+' students in '+keys.length+' group(s):</span><br>'+
+    keys.map(g=>'<span class="group-tag">'+g+'</span> '+studentList[g].length+' students').join('  ');
+}
+
+function filterStudents(){
+  const grp=document.getElementById('group-select').value;
+  const ss=document.getElementById('student-select');
+  if(!grp||grp==='__free__'){ss.disabled=true;ss.innerHTML='<option value="">--</option>';return;}
+  const stus=(studentList[grp]||[]).slice().sort();
+  ss.innerHTML='<option value="">Select your name</option>';
+  stus.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+  const nn=document.createElement('option');nn.value='__new__';nn.textContent='My name is not in this list';ss.appendChild(nn);
+  ss.disabled=false;onNameChange();
+}
+function onNameChange(){
+  const v=document.getElementById('student-select').value;
+  const box=document.getElementById('new-name-box');
+  if(box)box.style.display=(v==='__new__')?'block':'none';
+}
+function normalizeNm(s){
+  let t=String(s);
+  try{t=t.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}catch(e){}
+  t=t.toUpperCase().replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
+  return t.split(' ').sort().join(' ');
+}
+function resolveNewName(raw,grp){
+  const clean=String(raw||'').replace(/\s+/g,' ').trim();
+  if(!/^[A-Za-z\u00C0-\u00FF'\u2019 -]{4,60}$/.test(clean)||clean.split(' ').length<2)
+    return {ok:false,msg:'Write your surname and first name (letters only), as on the official list.'};
+  const key=normalizeNm(clean);
+  const hit=(studentList[grp]||[]).find(n=>normalizeNm(n)===key);
+  if(hit)return {ok:true,name:hit,added:false};
+  return {ok:true,name:clean.toUpperCase(),added:true};
+}
+function beginQuiz(){
+  const grp=document.getElementById('group-select').value;
+  let stu=document.getElementById('student-select').value;
+  const err=document.getElementById('stu-error');
+  err.textContent='Please select your group and name.';
+  S.nameAdded=false;
+  if(stu==='__new__'){
+    const res=resolveNewName(document.getElementById('new-name').value,grp);
+    if(!res.ok){err.textContent=res.msg;err.style.display='block';return;}
+    stu=res.name;S.nameAdded=res.added;
+  }
+  if(!grp||(grp!=='__free__'&&!stu)){err.style.display='block';return;}
+  const chosenName=grp==='__free__'?'Student':stu;
+  if(checkForSavedState(chosenName)){err.style.display='none';return;}
+  if(S.resumeOnly){err.style.display='block';err.textContent='This quiz is closed. You can only finish a quiz you had already started.';return;}
+  if(checkSessionLock(chosenName)){
+    err.style.display='block';
+    err.textContent='Your session has ended. No new attempts are allowed. Ask your lecturer to reset.';
+    return;
+  }
+  err.style.display='none';
+  S.lec=LECTURE;
+  S.group=grp==='__free__'?'No group':grp;
+  S.name=grp==='__free__'?'Student':stu;
+  clearProgress();clearResult();S.cur=0;S.mcqR=[];S.gapR=[];S.chosen=null;S.confirmed=false;S.saved=false;
+  S.startTime=Date.now();S.qStart=null;S.leaves=0;S.awaySec=0;S.leftThisQ=false;S.finished=false;S.answered=false;S.leaveLocked=false;S.resent=false;
+  try{if(navigator.wakeLock)navigator.wakeLock.request('screen').catch(function(){});}catch(e){}
+  try{localStorage.setItem(LKEY('qStartTime'),S.startTime);}catch(e){}
+  sendAccessLog();
+  const mcqPool=shuffle(S.lec.questions.filter(q=>q.type==='mcq'));const mcqs=mcqPool.slice(0,S.lec.draw||mcqPool.length).map(shuffleOpts);
+  const gaps=S.lec.questions.filter(q=>q.type==='gap');
+  S.questions=[...mcqs,...gaps];
+  S.wordBank=shuffle(gaps.map(q=>({word:q.answers[0],used:false})));
+  updateLive();renderQ();showScreen('screen-quiz');startTimer();
+}
+
+function sendAccessLog(){
+  if(!SHEET_URL||SHEET_URL.indexOf('PASTE_YOUR')===0)return;
+  const now=new Date();
+  const payload={
+    type:'access',
+    date:now.toLocaleDateString('en-GB'),
+    time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+    studentName:S.name,group:S.group,
+    lectureNum:S.lec.num,
+    lecture:'L'+S.lec.num+' - '+S.lec.title
+  };
+  try{
+    fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  }catch(e){}
+}
+
+// RENDER
+function renderQ(){
+  const q=S.questions[S.cur];S.answered=false;const tot=S.questions.length;const cur=S.cur+1;
+  const gaps=S.questions.filter(x=>x.type==='gap');
+  const gapPos=q.type==='gap'?gaps.indexOf(q)+1:0;
+  const mcqPos=q.type==='mcq'?S.mcqR.length+1:0;
+  document.getElementById('q-lec-tag').textContent='L'+S.lec.num+' \u00b7 '+S.lec.title;
+  document.getElementById('q-stud-info').textContent=S.name+' \u00b7 '+S.group;
+  document.getElementById('q-counter').textContent=cur+' / '+tot;
+  document.getElementById('q-progress').style.width=Math.round(cur/tot*100)+'%';
+  const badge=document.getElementById('q-badge');
+  badge.textContent=q.type==='gap'?'Fill-in-the-Gap '+gapPos+' of '+gaps.length:(S.lec.draw?'Question ':'MCQ ')+mcqPos+' of '+S.questions.filter(function(x){return x.type==='mcq';}).length;
+  badge.className='q-badge '+(q.type==='gap'?'gap':'mcq');
+  document.getElementById('q-fb').style.display='none';
+  const body=document.getElementById('q-body');
+  if(q.type==='mcq'){
+    body.innerHTML='<div style="font-size:15px;line-height:1.6;margin-bottom:16px">'+q.q+'</div><div class="options">'+
+      q.opts.map((o,i)=>'<button class="opt" onclick="pickOpt('+i+')"><span class="opt-letter">'+['A','B','C','D'][i]+'</span><span>'+o+'</span></button>').join('')+'</div>';
+    S.chosen=null;S.confirmed=false;
+    document.getElementById('q-actions').innerHTML='<button class="btn-sm" id="btn-cf" onclick="confirmMCQ()" disabled>Confirm &rarr;</button>';
+  }else{
+    body.innerHTML='<div class="hint-box"><strong>Complete the sentence</strong> &mdash; fill in the blank: <em>'+q.display+'</em></div>'+
+      renderWordBank()+
+      '<div class="gap-sentence">'+q.before+' <span class="gap-blank" id="gap-display">___</span> '+q.after+'</div>'+
+      '<input type="text" class="gap-input" id="gap-input" placeholder="Type your answer here..." autocomplete="off">';
+    document.getElementById('q-actions').innerHTML='<button class="btn-sm" id="btn-gap" onclick="confirmGap()" disabled>Check Answer &rarr;</button>';
+    const gi=document.getElementById('gap-input');
+    gi.addEventListener('input',function(){
+      const v=this.value;
+      const d=document.getElementById('gap-display');
+      if(d)d.textContent=v||'___';
+      document.getElementById('btn-gap').disabled=!v.trim();
+    });
+    gi.addEventListener('keydown',function(e){if(e.key==='Enter'&&this.value.trim())confirmGap();});
+    setTimeout(()=>gi.focus(),200);
+  }
+  startQTimer();
+}
+function renderWordBank(){
+  if(!S.wordBank||!S.wordBank.length)return'';
+  return '<div class="word-bank"><div class="wb-label">Word Bank</div><div class="wb-words">'+
+    S.wordBank.map((w,i)=>w.used?
+      '<span class="wb-word used">'+w.word+'</span>':
+      '<button type="button" class="wb-word" onclick="pickBankWord('+i+')">'+w.word+'</button>'
+    ).join('')+
+    '</div></div>';
+}
+function pickBankWord(i){
+  const entry=S.wordBank[i];
+  if(!entry||entry.used)return;
+  const gi=document.getElementById('gap-input');
+  if(!gi||gi.disabled)return;
+  gi.value=entry.word;
+  gi.dispatchEvent(new Event('input'));
+  gi.focus();
+}
+function pickOpt(i){
+  if(S.confirmed)return;S.chosen=i;
+  document.querySelectorAll('.opt').forEach((el,idx)=>el.classList.toggle('selected',idx===i));
+  document.getElementById('btn-cf').disabled=false;
+}
+function confirmMCQ(){
+  if(S.answered||S.chosen===null)return;
+  const q=S.questions[S.cur];const ok=S.chosen===q.ans;S.confirmed=true;S.answered=true;stopQTimer();
+  S.mcqR.push({q:q.q,ok,chosen:q.opts[S.chosen],correct:q.opts[q.ans],secs:qElapsed(),left:S.leftThisQ});S.qStart=null;saveProgress();
+  document.querySelectorAll('.opt').forEach((el,i)=>{
+    el.onclick=null;
+    /* students are never told whether an answer is right or wrong */
+  });
+  const fb=document.getElementById('q-fb');
+  fb.style.display='block';fb.className='fb-box fb-neutral';
+  fb.textContent='Answer recorded.';
+  updateLive();
+  const isLast=S.cur+1>=S.questions.length;
+  document.getElementById('q-actions').innerHTML='<button class="btn-sm" onclick="'+(isLast?'finishQuiz()':'nextQ()')+'">'+
+    (isLast?'See Results &rarr;':'Next Question &rarr;')+'</button>';
+}
+function confirmGap(){
+  if(S.answered)return;
+  const q=S.questions[S.cur];S.answered=true;stopQTimer();
+  const input=document.getElementById('gap-input');
+  const userAns=(input.value||'').trim().toLowerCase();
+  const ok=q.answers.some(a=>a.toLowerCase()===userAns);
+  const correctAns=q.answers[0];
+  S.gapR.push({sentence:q.before+' [___] '+q.after,ok,given:input.value.trim(),correct:correctAns,secs:qElapsed(),left:S.leftThisQ});S.qStart=null;saveProgress();
+  const bankEntry=S.wordBank.find(w=>!w.used&&w.word.toLowerCase()===correctAns.toLowerCase());
+  if(bankEntry)bankEntry.used=true;
+  const bankEl=document.querySelector('.word-bank');
+  if(bankEl)bankEl.outerHTML=renderWordBank();
+  const display=document.getElementById('gap-display');
+  if(display){display.textContent=input.value.trim();display.className='gap-blank';}
+  input.className='gap-input';
+  input.disabled=true;
+  const fb=document.getElementById('q-fb');
+  fb.style.display='block';fb.className='fb-box fb-neutral';
+  fb.textContent='Answer recorded.';
+  updateLive();
+  const isLast=S.cur+1>=S.questions.length;
+  document.getElementById('q-actions').innerHTML='<button class="btn-sm" onclick="'+(isLast?'finishQuiz()':'nextQ()')+'">'+
+    (isLast?'See Results &rarr;':'Next Question &rarr;')+'</button>';
+}
+function nextQ(){S.cur++;S.qStart=null;saveProgress();renderQ();}
+function finishQuiz(){
+  if(S.finished)return;
+  S.finished=true;closeAway();stopTimer();stopQTimer();clearProgress();saveResult();
+  showResults();
+  trySaveToSheet();
+}
+
+function resultSummaryText(){
+  const mo=S.mcqR.filter(r=>r.ok).length;
+  const go=S.gapR.filter(r=>r.ok).length;
+  const total=mo+go;
+  const {g:grade}=getGrade(total);
+  const now=new Date();
+  return 'L'+S.lec.num+' - '+S.lec.title+' | '+S.name+' ('+S.group+') | '+
+    now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+
+    ' | MCQ '+mo+'/'+S.mcqR.length+(S.gapR.length?', Gap '+go+'/'+S.gapR.length:'')+', Total '+pts(total)+'/'+SCORE_MAX+', Grade: '+grade;
+}
+function copyResult(){
+  const txt=resultSummaryText();
+  const box=document.getElementById('copy-box');
+  const done=()=>{const old=box.style.borderColor;box.style.borderColor='#90ee90';setTimeout(()=>{box.style.borderColor=old;},600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>{fallbackCopy(txt,done);});
+  }else{
+    fallbackCopy(txt,done);
+  }
+}
+function fallbackCopy(txt,done){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done();
+  }catch(e){
+    alert('Could not copy automatically. Please select the text above and copy it manually.');
+  }
+}
+
+async function trySaveToSheet(){
+  const badge=document.getElementById('sheet-status');
+  if(!SHEET_URL||SHEET_URL.indexOf('PASTE_YOUR')===0){
+    S.saved=false;
+    badge.innerHTML='';
+    return;
+  }
+  badge.innerHTML='<div class="sheet-badge sheet-wait">Saving to Google Sheet&hellip;</div>';
+  const mo=S.mcqR.filter(r=>r.ok).length;
+  const go=S.gapR.filter(r=>r.ok).length;
+  const total=mo+go;
+  const {g:grade}=getGrade(total);
+  const now=new Date();
+  const startedAt=S.startTime?new Date(S.startTime):null;
+  const durationSec=S.startTime?Math.max(0,Math.round((Date.now()-S.startTime)/1000)):'';
+  const durationDisplay=S.startTime?(Math.floor(durationSec/60)+'m '+(durationSec%60)+'s'):'';
+  const gapDetail=S.gapR.map((r,i)=>'G'+(i+1)+':"'+r.given+'"'+(r.ok?'V':'X')+'('+r.correct+')').join(' | ');
+  const allR=[].concat(S.mcqR,S.gapR);
+  const timed=allR.filter(r=>typeof r.secs==='number');
+  const avgSec=timed.length?Math.round(timed.reduce((a,r)=>a+r.secs,0)/timed.length):'';
+  const leftQs=allR.filter(r=>r.left).length;
+  const payload={
+    attemptId:String(S.startTime||''),nameAdded:S.nameAdded?'YES':'',
+    leaves:S.leaves,awaySeconds:S.awaySec,avgSeconds:avgSec,leftOnQuestions:leftQs,
+    date:now.toLocaleDateString('en-GB'),
+    time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+    accessDate:startedAt?startedAt.toLocaleDateString('en-GB'):'',
+    accessTime:startedAt?startedAt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'',
+    durationSeconds:durationSec,
+    durationDisplay,
+    studentName:S.name,group:S.group,
+    lectureNum:S.lec.num,
+    lecture:'L'+S.lec.num+' - '+S.lec.title,
+    mcqScore:mo+'/'+S.mcqR.length,openScore:S.gapR.length?go+'/'+S.gapR.length:'',
+    totalPct:pts(total)+'/'+SCORE_MAX,rawScore:pts(total),scoreMax:SCORE_MAX,correctCount:total,grade,feedback:gapDetail
+  };
+  try{
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true});
+    S.saved=true;
+    badge.innerHTML='<div class="sheet-badge sheet-ok">Saved to Google Sheet</div>';
+  }catch(e){
+    S.saved=false;
+    badge.innerHTML='<div class="sheet-badge sheet-fail">Could not save automatically &mdash; use Copy My Result below and send it to your lecturer.</div>';
+  }
+}
+
+function showResults(){
+  const mo=S.mcqR.filter(r=>r.ok).length;
+  const go=S.gapR.filter(r=>r.ok).length;
+  const total=mo+go;
+  const pct=Math.round(total/20*100);
+  const {g:grade,c:gc}=getGrade(total);
+  document.getElementById('r-name').textContent=S.name;
+  document.getElementById('r-group').textContent=S.group;
+  document.getElementById('r-title').textContent=S.lec.title+' \u2014 '+S.lec.author;
+  const tv=document.getElementById('r-total');tv.textContent=pts(total)+' / '+SCORE_MAX;syncMaxLabels();
+  const hideScore=!!(window.APP_CONFIG&&window.APP_CONFIG.showFinalScore===false);
+  document.querySelectorAll('.total-box,.scores-grid,#copy-box').forEach(function(e){e.style.display=hideScore?'none':'';});
+  const cb=document.querySelector('button[onclick="copyResult()"]');if(cb)cb.style.display=hideScore?'none':'';
+  if(hideScore){const rl=document.getElementById('res-max-label');if(rl)rl.textContent='Quiz Complete';}tv.style.color=gc;
+  const gv=document.getElementById('r-grade');gv.textContent=grade;gv.style.color=gc;
+  document.getElementById('r-mcq').textContent=mo+'/'+S.mcqR.length;
+  document.getElementById('r-gap').textContent=S.gapR.length?go+'/'+S.gapR.length:'-';
+  {const gb=document.getElementById('r-gap').parentNode;if(gb)gb.style.display=S.gapR.length?'':'none';}
+  const pv=document.getElementById('r-pct');pv.textContent=pct+'%';pv.style.color=gc;
+  document.getElementById('copy-box').textContent=resultSummaryText();
+  const rn=document.getElementById('reveal-note');
+  if(S.leaveLocked){rn.style.display='block';rn.style.color='#ff9090';rn.textContent='This quiz was closed because you left the page. Your answers up to that point were recorded; the rest count as unanswered.';}
+  else if(!REVEAL_CORRECT){rn.style.display='block';rn.style.color='rgba(255,255,255,.5)';rn.textContent='Correct answers are not shown here. Your lecturer will go over them in class.';}
+  document.getElementById('sheet-status').innerHTML=
+    S.saved===true?'<div class="sheet-badge sheet-ok">Saved to Google Sheet</div>':
+    S.saved===false?'':'';
+  document.getElementById('r-mcq-review').innerHTML=S.mcqR.map(r=>
+    '<div class="ri '+(r.ok?'ok':'ko')+'"><span class="ri-icon">'+(r.ok?'V':'X')+'</span>'+
+    '<div><div class="ri-q">'+r.q+'</div>'+(!r.ok&&REVEAL_CORRECT?'<div class="ri-ans">Correct: '+r.correct+'</div>':'')+'</div></div>').join('');
+  document.getElementById('r-gap-review').innerHTML=S.gapR.map(r=>
+    '<div class="ri '+(r.ok?'ok':'ko')+'"><span class="ri-icon">'+(r.ok?'V':'X')+'</span>'+
+    '<div><div class="ri-q">'+r.sentence+'</div>'+
+    '<div class="'+(r.ok?'ri-correct':'ri-ans')+'">Your answer: "'+r.given+'" '+(r.ok?'V':(REVEAL_CORRECT?'- Correct: "'+r.correct+'"':'X'))+'</div>'+
+    '</div></div>').join('');
+  showScreen('screen-results');
+}
+async function adminUnlockRetry(){
+  if(!(await verifyTeacher('Teacher password, to allow this student a retry:')))return;
+  clearResult();clearProgress();
+  try{localStorage.removeItem(LKEY('quizSessionLocked'));}catch(e){}
+  S.lec=LECTURE;S.leaveLocked=false;S.resumeOnly=false;
+  goToStudentSelect();
+}
+
+// ── TIMER ─────────────────────────────────────────────────────
+// ---- per-question timer ----
+let qInterval=null;
+function qLimit(q){const L=S.lec||LECTURE;return q.type==='mcq'?(L.secMcq||SECONDS_MCQ):SECONDS_GAP;}
+function qElapsed(){return S.qStart?Math.round((Date.now()-S.qStart)/1000):0;}
+function stopQTimer(){clearInterval(qInterval);qInterval=null;}
+function startQTimer(){
+  stopQTimer();
+  if(!S.qStart){S.qStart=Date.now();S.leftThisQ=false;}
+  saveProgress();
+  tickQ();
+  if(!S.answered)qInterval=setInterval(tickQ,500);
+}
+function tickQ(){
+  const q=S.questions[S.cur];
+  if(!q||S.answered||S.finished){stopQTimer();return;}
+  const left=Math.max(0,qLimit(q)-Math.floor((Date.now()-S.qStart)/1000));
+  const el=document.getElementById('qtimer-val');
+  if(el){el.textContent=left+'s';el.className='timer-val'+(left<=5?' danger':(left<=10?' warning':''));}
+  if(left<=0){stopQTimer();timeUpQuestion();}
+}
+function markBankUsed(w){
+  const e=S.wordBank.find(x=>!x.used&&x.word.toLowerCase()===String(w).toLowerCase());
+  if(e)e.used=true;
+  const b=document.querySelector('.word-bank');if(b)b.outerHTML=renderWordBank();
+}
+function timeUpQuestion(){
+  const q=S.questions[S.cur];
+  if(!q||S.answered||S.finished)return;
+  if(q.type==='mcq'){
+    if(S.chosen!==null){confirmMCQ();return;}
+    S.answered=true;
+    S.mcqR.push({q:q.q,ok:false,chosen:'(no answer)',correct:q.opts[q.ans],secs:qLimit(q),left:S.leftThisQ});
+    document.querySelectorAll('.opt').forEach(el=>{el.onclick=null;});
+  }else{
+    const input=document.getElementById('gap-input');
+    if(input&&input.value.trim()){confirmGap();return;}
+    S.answered=true;
+    S.gapR.push({sentence:q.before+' [___] '+q.after,ok:false,given:'(no answer)',correct:q.answers[0],secs:qLimit(q),left:S.leftThisQ});
+    markBankUsed(q.answers[0]);
+    if(input)input.disabled=true;
+  }
+  S.qStart=null;saveProgress();
+  const fb=document.getElementById('q-fb');
+  fb.style.display='block';fb.className='fb-box fb-neutral';fb.textContent='Time is up for this question. No answer recorded.';
+  updateLive();
+  const isLast=S.cur+1>=S.questions.length;
+  document.getElementById('q-actions').innerHTML='<button class="btn-sm" onclick="'+(isLast?'finishQuiz()':'nextQ()')+'">'+(isLast?'See Results &rarr;':'Next Question &rarr;')+'</button>';
+}
+function shuffleOpts(q){
+  const idx=shuffle(q.opts.map((o,i)=>i));
+  return Object.assign({},q,{opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)});
+}
+
+// ---- leaving the page ----
+let awayStart=null,blurTimer=null;
+function quizActive(){
+  const sc=document.getElementById('screen-quiz');
+  return !!(S.startTime&&!S.finished&&S.questions.length&&sc&&sc.classList.contains('active'));
+}
+function closeAway(){if(awayStart!==null){S.awaySec+=Math.round((Date.now()-awayStart)/1000);awayStart=null;}}
+function goAway(){
+  if(!quizActive()||awayStart!==null)return;
+  awayStart=Date.now();S.leaves++;S.leftThisQ=true;saveProgress();
+  if(LEAVE_MODE==='LOCK')endForLeaving();
+}
+function comeBack(){
+  clearTimeout(blurTimer);blurTimer=null;
+  closeAway();
+  if(S.leaveLocked&&S.finished&&!S.resent&&!S.saved){S.resent=true;trySaveToSheet();}
+}
+function endForLeaving(){
+  if(S.finished||S.leaveLocked)return;
+  S.leaveLocked=true;stopQTimer();
+  S.questions.slice(S.mcqR.length+S.gapR.length).forEach(q=>{
+    if(q.type==='mcq')S.mcqR.push({q:q.q,ok:false,chosen:'(left the page)',correct:q.opts[q.ans],left:true});
+    else S.gapR.push({sentence:q.before+' [___] '+q.after,ok:false,given:'(left the page)',correct:q.answers[0],left:true});
+  });
+  try{localStorage.setItem(LKEY('quizSessionLocked'),S.name);}catch(e){}
+  finishQuiz();
+}
+document.addEventListener('visibilitychange',function(){if(document.hidden)goAway();else comeBack();});
+window.addEventListener('blur',function(){
+  clearTimeout(blurTimer);
+  blurTimer=setTimeout(function(){if(!document.hasFocus())goAway();},LEAVE_GRACE_SECONDS*1000);
+});
+window.addEventListener('focus',comeBack);
+(function(){
+  const n=document.getElementById('rules-note');
+  if(n)n.textContent=(LEAVE_MODE==='LOCK'?'Rules: every question is timed. If you leave this page or switch to another app, the quiz closes for good and cannot be reopened. ':'Rules: every question is timed, and leaving this page is recorded. ')+'Keep this page open until you see your result.';
+})();
+
+let timerInterval=null;
+let timerSeconds=TOTAL_SECONDS;
+let sessionLocked=false;
+let sessionStartTime=null;
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const elapsed=S.startTime?Math.floor((Date.now()-S.startTime)/1000):0;
+  timerSeconds=Math.max(0,TOTAL_SECONDS-elapsed);
+  sessionStartTime=S.startTime||Date.now();
+  try{localStorage.setItem(LKEY('quizSessionStart'),sessionStartTime);}catch(e){}
+  updateTimerDisplay();
+  if(timerSeconds<=0){hardStop();return false;}
+  timerInterval=setInterval(function(){
+    timerSeconds=Math.max(0,TOTAL_SECONDS-Math.floor((Date.now()-S.startTime)/1000));
+    updateTimerDisplay();
+    if(timerSeconds<=0){clearInterval(timerInterval);hardStop();}
+  },1000);
+  return true;
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);
+}
+
+function hardStop(){
+  stopQTimer();
+  const remaining=S.questions.slice(S.mcqR.length+S.gapR.length);
+  remaining.forEach(q=>{
+    if(q.type==='mcq'){
+      S.mcqR.push({q:q.q,ok:false,chosen:'(no answer)',correct:q.opts[q.ans]});
+    }else{
+      S.gapR.push({sentence:q.before+' [___] '+q.after,ok:false,given:'(no answer)',correct:q.answers[0]});
+    }
+  });
+  sessionLocked=true;
+  try{localStorage.setItem(LKEY('quizSessionLocked'),S.name);}catch(e){}
+  showTimeUpOverlay();
+}
+
+function showTimeUpOverlay(){
+  const overlay=document.createElement('div');
+  overlay.id='timeup-overlay';
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.97);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px';
+  overlay.innerHTML=
+    '<div style="color:#ff6060;font-size:22px;font-weight:700;margin-bottom:8px">Time is Up</div>'+
+    '<div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:6px">The time limit has ended.</div>'+
+    '<div style="color:rgba(255,255,255,.5);font-size:13px;margin-bottom:28px">Unanswered questions have been marked as incorrect.</div>'+
+    '<div style="color:#c9a84c;font-size:13px;font-style:italic;margin-bottom:28px">The quiz is now locked. No new attempts are possible.</div>'+
+    '<button onclick="dismissOverlay()" style="background:#c9a84c;border:none;border-radius:10px;padding:13px 32px;font-size:15px;font-weight:700;color:#0f1f3d;cursor:pointer;font-family:Georgia,serif">See My Results</button>';
+  document.body.appendChild(overlay);
+}
+
+function dismissOverlay(){
+  const o=document.getElementById('timeup-overlay');
+  if(o)o.remove();
+  finishQuiz();
+}
+
+function checkSessionLock(name){
+  try{
+    if(localStorage.getItem(LKEY('quizSessionLocked'))===name){
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+async function resetSession(){
+  if(!(await verifyTeacher('Teacher password, to reset the session:')))return;
+  try{localStorage.removeItem(LKEY('quizSessionLocked'));localStorage.removeItem(LKEY('quizSessionStart'));}catch(e){}
+  sessionLocked=false;
+  alert('Session reset. Students can now start a new quiz.');
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerSeconds/60);
+  const s=timerSeconds%60;
+  const str=m+':'+(s<10?'0':'')+s;
+  const el=document.getElementById('timer-val');
+  const bar=document.getElementById('timer-bar');
+  if(el){
+    el.textContent=str;
+    el.className='timer-val';
+    bar.className='timer-bar';
+    if(timerSeconds<=300&&timerSeconds>60){
+      el.classList.add('warning');
+    }else if(timerSeconds<=60){
+      el.classList.add('danger');
+      bar.classList.add('danger-bar');
+    }
+  }
+}
+
+</script>
+</body>
+</html>

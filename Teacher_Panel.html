@@ -124,7 +124,7 @@ input[type=file]{padding:9px 10px;font-size:12px}
 const SHEET_URL=(window.APP_CONFIG&&window.APP_CONFIG.sheetUrl)||"";
 const LECTURES={1:'Heart of Darkness',2:'The Dead',3:'The Second Coming',4:'The Waste Land',5:'The Great Gatsby',
   6:'Mrs Dalloway',7:'Slave Narratives',8:'The Ethics of Living Jim Crow',9:'The Harlem Renaissance',
-  10:'Invisible Man',11:'Go Tell It on the Mountain',12:'Extra: The Second Coming and Modernism'};
+  10:'Invisible Man',11:'Go Tell It on the Mountain',12:'Extra: The Second Coming and Modernism',13:'Extra: The Waste Land',14:'Extra: Mrs Dalloway'};
 const $=id=>document.getElementById(id);
 let KEY='',skew=0,timer=null;
 
@@ -154,7 +154,7 @@ function show(ms){return new Date(ms).toLocaleString('en-GB',{day:'2-digit',mont
 function statusOf(s){const now=Date.now()+skew;return now<s.opens?'Scheduled':(now>=s.closes?'Closed':'OPEN');}
 
 Object.keys(LECTURES).forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent='L'+n+' - '+LECTURES[n];$('lec').appendChild(o);});
-$('lec').onchange=function(){if(this.value==='12')$('mins').value='20';};
+$('lec').onchange=function(){if(['12','13','14'].indexOf(this.value)>=0)$('mins').value='20';};
 function defaults(){const n=Date.now();$('opens').value=toLocalInput(n);$('closes').value=toLocalInput(n+60*60000);}
 defaults();
 
